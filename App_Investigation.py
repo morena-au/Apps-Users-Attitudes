@@ -16,6 +16,7 @@ from sklearn.linear_model import LinearRegression
 import statsmodels.api as stm
 from scipy import stats
 from sklearn.preprocessing import OneHotEncoder
+from statsmodels.stats.mediation import Mediation
 
 # Manage warnings
 pd.set_option('mode.chained_assignment', None)
@@ -857,8 +858,9 @@ plt.show()
 # ## 2. MODELLING
 # Multi variate statistics and mediation relationship
 
+# %% [markdown]
+# #### 1. check assumptions that observations are time independent
 # %%
-# 1. check assumptions that observations are time independent
 # V4
 Apps_clean.loc[:, 'D4_2_1'] = Apps_clean.loc[:, 'V4_2_Interview'] - \
                               Apps_clean.loc[:, 'V4_1_Interview']
@@ -951,6 +953,40 @@ plt.show()
 # In the third inteview 20% observation increase by 1
 # this accumulative effect is incorporate in D6_4_1
 
+# %%
+# V12
+Apps_clean['D12_2_1'] = Apps_clean['V12_2_Interview'] - \
+                       Apps_clean['V12_1_Interview']
+Apps_clean['D12_3_2'] = Apps_clean['V12_3_Interview'] - \
+                       Apps_clean['V12_2_Interview']
+Apps_clean['D12_4_3'] = Apps_clean['V12_4_Interview'] - \
+                       Apps_clean['V12_3_Interview']
+Apps_clean['D12_4_1'] = Apps_clean['V12_4_Interview'] - \
+                       Apps_clean['V12_1_Interview']
+
+fig, axs = plt.subplots(4, sharex=True, sharey=True)
+fig.suptitle('V12 (satisfaction) difference between interviews',
+             fontsize=18, fontweight='bold')
+sns.boxplot(Apps_clean['D12_2_1'], ax=axs[0])
+axs[0].set_title('{}'.format(pd.DataFrame.describe(Apps_clean['D12_2_1'])),
+                 fontsize=9)
+sns.boxplot(Apps_clean['D12_3_2'], ax=axs[1])
+axs[1].set_title('{}'.format(pd.DataFrame.describe(Apps_clean['D12_3_2'])),
+                 fontsize=9)
+sns.boxplot(Apps_clean['D12_4_3'], ax=axs[2])
+axs[2].set_title('{}'.format(pd.DataFrame.describe(Apps_clean['D12_4_3'])),
+                 fontsize=9)
+sns.boxplot(Apps_clean['D12_4_1'], ax=axs[3])
+axs[3].set_title('{}'.format(pd.DataFrame.describe(Apps_clean['D12_4_1'])),
+                 fontsize=9)
+fig.subplots_adjust(top=0.85, hspace=1.5)
+plt.show()
+
+# %% [Markdown]
+# Comments:
+# There are some level off effects
+# Investigate further relationship TODO
+
 # %% [Markdown]
 # ### MODEL 1a: V6_1, V2 ---> V4_1
 # ## STEP 1: V6_1 on V4_1
@@ -975,7 +1011,7 @@ print(model1.summary())
 # %%
 # Check mediator effect
 # Create dummy variable for V2
-V2 = V2_enc.transform(Apps_clean['V2'].values.reshape(-1, 1)).toarray()
+V2 = V2_enc.transform(Apps_clean.loc[:, 'V2'].values.reshape(-1, 1)).toarray()
 # 1 if ith apps is hedonic
 # 0 if ith apps is utilitarian
 
@@ -985,12 +1021,12 @@ print(logit2.summary())
 
 # %% [markdown]
 # V6_1_Interview is significant with p = 0.009
-# the intercept is the estimated log odds of an app with a number of functions
-# of zero being an hedonic apps
+# the intercept is the estimated log odds (log(p/1-p)) of an app with a number
+# of functions of zero being an hedonic apps
 # The conditional logit of being in an hedonic app when the number of functions
-# is held to 5: b0 + b1* V6
+# is held to 5: b0 + b1*V6 >> -0,3297 + (0,0356*5)
 # For 1 unit increase in the number function, the expected change in the log
-# odds of being an hedonic app is b1.
+# odds of being an hedonic app is b1 = 0,0356.
 
 # %% [markdown]
 # ## STEP 3: V6_1, V2 ---> V4_1
@@ -1018,6 +1054,32 @@ abs(model1.params[1]) > abs(model3.params[1])
 # Total effect
 model3.params[1] + (logit2.params[1]*model3.params[2])
 
+# %%
+# Using mediation model in stasmodels (Imai, Keele, Tingley (2010))
+# Regression model for the outcome
+Apps_clean['V2'] = V3_enc.transform(Apps_clean['V2'].
+                                    values.reshape(-1, 1)).toarray()
+
+outcome_model = stm.OLS.from_formula('V4_1_Interview ~ V6_1_Interview + \
+                                     V2',
+                                     data=Apps_clean)
+
+# Regression model for the mediator variable
+mediator_model = stm.GLM.from_formula('V2 ~ V6_1_Interview ',
+                                      data=Apps_clean,
+                                      family=stm.families.Binomial())
+
+med = Mediation(outcome_model, mediator_model, 'V6_1_Interview', 'V2')
+
+med_result = med.fit()
+
+med_result.summary()
+
+# %%
+# Comments:
+# The ACME (average causal mediation effect) is not statistically
+# distinct from zero
+
 # %% [Markdown]
 # ### Model 1b: D6_4_1, V2 ---> D4_4_1
 # Model the difference in number of functions onto the difference in frequency
@@ -1025,4 +1087,278 @@ model3.params[1] + (logit2.params[1]*model3.params[2])
 # (Since differences within interviews seems to be commulative)
 # TODO
 # (thus changes does not seems to level out >> check further on outliers
-# to spot trends)
+# to spot trends within time)
+
+# ## STEP 1: D6_4_1 on D4_4_1
+model1 = stm.OLS(Apps_clean.loc[:, 'D4_4_1'],
+                 stm.add_constant(Apps_clean.loc[:, 'D6_4_1'])).fit()
+print(model1.summary())
+
+# %% [markdown]
+# Comments
+# Statistical evidence means between D4_4_1 and D&_4_1
+# Increments of function uses creats reduction of frequency values,
+# which translate that the apps is used more (and viceversa)
+
+# %% [Markdown]
+# ## STEP 2: D6_4_1 on V2
+
+# %%
+# Check mediator effect
+
+logit2 = stm.Logit(V2, stm.add_constant(Apps_clean.
+                                        loc[:, 'D6_4_1'])).fit()
+# 1 if ith apps is hedonic
+# 0 if ith apps is utilitarian
+print(logit2.summary())
+
+# %% [markdown]
+# Comments
+# With a p-value = 0,119 we fail to reject the null hypothesis
+# Since D6_4_1 is not significant, it cannot mediate anything
+
+# %% [Markdown]
+# ### MODEL 2a
+# ## STEP 1: V6_1, V12_1, V2, V3 ---> V4_1
+
+del X
+V3 = V3_enc.transform(Apps_clean['V3'].values.reshape(-1, 1)).toarray()
+X = np.hstack([Apps_clean.loc[:, 'V6_1_Interview'].values.reshape(-1, 1),
+              Apps_clean.loc[:, 'V12_1_Interview'].values.reshape(-1, 1),
+              V2, V3])
+
+model1 = stm.OLS(Apps_clean.loc[:, 'V4_1_Interview'],
+                 stm.add_constant(X)).fit()
+print(model1.summary())
+
+# %% [markdown]
+# COMMENTS:
+# Coefs are all statisticaly significant
+# V3 lower significance (information already covered by V2)
+
+# %% [markdown]
+# ## STEP 2: mediation effects
+# Reference Imai, Keele, Tingley (2010)
+Apps_clean['V3'] = V3_enc.transform(Apps_clean['V3'].
+                                    values.reshape(-1, 1)).toarray()
+
+# V6*V2
+# Regression model for the outcome
+outcome_model = stm.OLS.from_formula('V4_1_Interview ~ V6_1_Interview + \
+                                     V12_1_Interview + V3 + V2',
+                                     data=Apps_clean)
+
+# Regression model for the mediator variable
+mediator_model = stm.GLM.from_formula('V2 ~ V6_1_Interview + \
+                                       V12_1_Interview + V3',
+                                      data=Apps_clean,
+                                      family=stm.families.Binomial())
+
+med = Mediation(outcome_model, mediator_model, 'V6_1_Interview', 'V2')
+
+med_result = med.fit()
+
+med_result.summary()
+
+# %% [markdown]
+# Comments:
+# ACME (Average Causal Mediation Effect)
+# ADE (Average Direct Effect)
+# The results above demonstrate that the ACME is not statistically distinct
+# from zero, or no mediation. The average direct effect (ADE) is negative
+# and statistically notable. The total effect is statistically notable and it
+# is driven by ADE.
+
+# %%
+# V12 * V2
+# Regression model for the outcome
+outcome_model = stm.OLS.from_formula('V4_1_Interview ~ V6_1_Interview + \
+                                     V12_1_Interview + V3 + V2',
+                                     data=Apps_clean)
+
+# Regression model for the mediator variable
+mediator_model = stm.GLM.from_formula('V2 ~ V6_1_Interview + \
+                                       V12_1_Interview + V3',
+                                      data=Apps_clean,
+                                      family=stm.families.Binomial())
+
+med = Mediation(outcome_model, mediator_model, 'V12_1_Interview', 'V2')
+med_result = med.fit()
+med_result.summary()
+
+# %% [markdown]
+# Comments:
+# Only direct effect is statistically significant
+
+# %%
+# V6 * V3
+# Regression model for the outcome
+outcome_model = stm.OLS.from_formula('V4_1_Interview ~ V6_1_Interview + \
+                                     V12_1_Interview + V3 + V2',
+                                     data=Apps_clean)
+
+# Regression model for the mediator variable
+mediator_model = stm.GLM.from_formula('V3 ~ V6_1_Interview + \
+                                       V12_1_Interview + V2',
+                                      data=Apps_clean,
+                                      family=stm.families.Binomial())
+
+med = Mediation(outcome_model, mediator_model, 'V12_1_Interview', 'V3')
+med_result = med.fit()
+med_result.summary()
+
+# %% [markdown]
+# Comments:
+# Only direct effect is significant
+
+# %%
+# V12 * V3
+# Regression model for the outcome
+outcome_model = stm.OLS.from_formula('V4_1_Interview ~ V6_1_Interview + \
+                                     V12_1_Interview + V3 + V2',
+                                     data=Apps_clean)
+
+# Regression model for the mediator variable
+mediator_model = stm.GLM.from_formula('V3 ~ V6_1_Interview + \
+                                       V12_1_Interview + V2',
+                                      data=Apps_clean,
+                                      family=stm.families.Binomial())
+
+med = Mediation(outcome_model, mediator_model, 'V12_1_Interview', 'V3')
+med_result = med.fit()
+med_result.summary()
+
+# %% [markdown]
+# Comments:
+# Only Average Direct Effect statistically significant
+
+# %%
+# V2 * V3
+# Regression model for the outcome
+outcome_model = stm.OLS.from_formula('V4_1_Interview ~ V6_1_Interview + \
+                                     V12_1_Interview + V3 + V2',
+                                     data=Apps_clean)
+
+# Regression model for the mediator variable
+mediator_model = stm.GLM.from_formula('V3 ~ V6_1_Interview + \
+                                       V12_1_Interview + V2',
+                                      data=Apps_clean,
+                                      family=stm.families.Binomial())
+
+med = Mediation(outcome_model, mediator_model, 'V2', 'V3')
+med_result = med.fit()
+med_result.summary()
+
+# %% [markdown]
+# Comments:
+# With a p-value of 0.014 also the Average Causal Mediation Effect is
+# statistically significant.
+
+# %%
+# V6 * V12
+# Regression model for the outcome
+outcome_model = stm.OLS.from_formula('V4_1_Interview ~ V6_1_Interview + \
+                                     V12_1_Interview + V3 + V2',
+                                     data=Apps_clean)
+
+# Regression model for the mediator variable
+mediator_model = stm.OLS.from_formula('V12_1_Interview ~ V6_1_Interview + \
+                                       V3 + V2',
+                                      data=Apps_clean)
+
+med = Mediation(outcome_model, mediator_model, 'V6_1_Interview',
+                'V12_1_Interview')
+med_result = med.fit()
+med_result.summary()
+
+# %% [markdown]
+# Comments:
+# With a p-value of 0.0 the Average Direct Effect and the Average Causal
+# Mediation Effect are both statistically significant
+
+# %% [markdown]
+# ### MODEL 2b: A modereted mediation analysis
+# Add novelty seeking
+
+clean_NS = pd.merge(Apps_clean, Personality.loc[:, ['Probanden_ID__lfdn',
+                                                    'NovSeek']],
+                    on='Probanden_ID__lfdn')
+
+# NovSeek avereage between [1--, 10++]
+pd.DataFrame.describe(clean_NS['NovSeek'])
+
+# The midiation effect is computed for people with high novelty seeking
+# V6*V2
+# Regression model for the outcome
+outcome_model = stm.OLS.from_formula('V4_1_Interview ~ V6_1_Interview*NovSeek \
+                                     + V12_1_Interview + V3 + V2*NovSeek',
+                                     data=clean_NS)
+
+# Regression model for the mediator variable
+mediator_model = stm.GLM.from_formula('V2 ~ V6_1_Interview*NovSeek + \
+                                       V12_1_Interview + V3',
+                                      data=clean_NS,
+                                      family=stm.families.Binomial())
+moderators = {'NovSeek': 10}
+med = Mediation(outcome_model, mediator_model, 'V6_1_Interview', 'V2',
+                moderators=moderators).fit()
+med.summary()
+
+# %% [markdown]
+# Comments:
+# Only direct effect is significant
+
+outcome_model = stm.OLS.from_formula('V4_1_Interview ~ V6_1_Interview + \
+                                     V12_1_Interview + V3 + V2 + NovSeek',
+                                     data=clean_NS)
+
+# Regression model for the mediator variable
+mediator_model = stm.OLS.from_formula('NovSeek ~ V6_1_Interview + \
+                                       V12_1_Interview + V3 + V2',
+                                      data=clean_NS)
+
+med = Mediation(outcome_model, mediator_model, 'V6_1_Interview',
+                'NovSeek').fit()
+med.summary()
+
+# %% [markdown]
+# Comments:
+# Only direct effect is significant
+
+# %% [Markdown]
+# ### : Missing Values Analysis
+Apps_missing = Apps.drop(list(Apps_clean.index))
+
+# %%
+# Difference in V6 for the missing and clean dataset
+V6_clean_1 = pd.DataFrame.describe(Apps_clean['V6_1_Interview'])
+V6_miss_1 = pd.DataFrame.describe(Apps_missing['V6_1_Interview'])
+
+fig, axs = plt.subplots(2, sharex=True, sharey=True, figsize=(15, 10))
+fig.suptitle('V6 (frequency) within clean and missing observations',
+             fontsize=15, fontweight='bold')
+sns.boxplot(Apps_clean['V6_1_Interview'], ax=axs[0])
+axs[0].set_title('{}'.format(V6_clean_1), fontsize=9, fontweight='bold')
+sns.boxplot(Apps_missing['V6_1_Interview'], ax=axs[1])
+axs[1].set_title('{}'.format(V6_miss_1), fontsize=9, fontweight='bold')
+fig.subplots_adjust(top=0.85, hspace=0.8)
+plt.show()
+
+# %%
+# Difference in V12 for the missing and clean dataset
+V12_clean_1 = pd.DataFrame.describe(Apps_clean['V12_1_Interview'])
+V12_miss_1 = pd.DataFrame.describe(Apps_missing['V12_1_Interview'])
+
+fig, axs = plt.subplots(2, sharex=True, sharey=True, figsize=(15, 10))
+fig.suptitle('V12 (satisfaction) within clean and missing observations',
+             fontsize=15, fontweight='bold')
+sns.boxplot(Apps_clean['V12_1_Interview'], ax=axs[0])
+axs[0].set_title('{}'.format(V12_clean_1), fontsize=9, fontweight='bold')
+sns.boxplot(Apps_missing['V12_1_Interview'], ax=axs[1])
+axs[1].set_title('{}'.format(V12_miss_1), fontsize=9, fontweight='bold')
+fig.subplots_adjust(top=0.85, hspace=0.8)
+plt.show()
+
+# %% [markdown]
+# Comments
+# No difference between the two datasets
