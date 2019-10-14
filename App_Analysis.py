@@ -86,15 +86,15 @@ print(model.summary())
 # run Linear Regression models:
 for i in ['V4_1_Interview', 'V4_2_Interview',
           'V4_3_Interview', 'V4_4_Interview']:
-  model = stm.OLS(Apps_clean[i], stm.add_constant(X)).fit()
-  print(model.summary())
+    model = stm.OLS(Apps_clean[i], stm.add_constant(X)).fit()
+    print(model.summary())
 
 # %% [markdown]
 # ### MODEL 2: Linear Regression between V4 and V3
 
 # %%
 # V3 (free vs paid for)
-fig, axs = plt.subplots(nrows=1, ncols=4, sharex=True, 
+fig, axs = plt.subplots(nrows=1, ncols=4, sharex=True,
                         sharey=True, figsize=(15, 10))
 fig.suptitle('V3 (Free vs. Paid for) & V4 (Frequncy [1++, 7--])',
              fontsize=15, fontweight='bold')
@@ -128,8 +128,8 @@ X = V3_enc.transform(Apps_clean['V3'].values.reshape(-1, 1)).toarray()
 # create the model using statsmodels.api
 for i in ['V4_1_Interview', 'V4_2_Interview',
           'V4_3_Interview', 'V4_4_Interview']:
-  model = stm.OLS(Apps_clean[i], stm.add_constant(X)).fit()
-  print(model.summary())
+    model = stm.OLS(Apps_clean[i], stm.add_constant(X)).fit()
+    print(model.summary())
 
 # p-value is small so there is statistical evidence of a difference
 # in average frequency between V3 (free vs paid for apps)
@@ -216,7 +216,7 @@ plt.show()
 
 # %% [markdown]
 # ### MODEL 6: Linear Regression between V4 and V12 Satisfaction [1--, 10++]
-fig, axs = plt.subplots(nrows=1, ncols=4, sharex=True, 
+fig, axs = plt.subplots(nrows=1, ncols=4, sharex=True,
                         sharey=True, figsize=(15, 10))
 fig.suptitle('V12 Satisfaction [1--, 10++] - Univariate Distribution',
              fontsize=15, fontweight='bold')
@@ -327,11 +327,14 @@ plt.show()
 
 # 1. check assumptions that observations are time independent
 # V4
-Apps_clean['D4_2_1'] = Apps_clean['V4_2_Interview'] -
+Apps_clean['D4_2_1'] = Apps_clean['V4_2_Interview'] - \
                        Apps_clean['V4_1_Interview']
-Apps_clean['D4_3_2'] = Apps_clean['V4_3_Interview'] - Apps_clean['V4_2_Interview']
-Apps_clean['D4_4_3'] = Apps_clean['V4_4_Interview'] - Apps_clean['V4_3_Interview']
-Apps_clean['D4_4_1'] = Apps_clean['V4_4_Interview'] - Apps_clean['V4_1_Interview']
+Apps_clean['D4_3_2'] = Apps_clean['V4_3_Interview'] - \
+                       Apps_clean['V4_2_Interview']
+Apps_clean['D4_4_3'] = Apps_clean['V4_4_Interview'] - \
+                       Apps_clean['V4_3_Interview']
+Apps_clean['D4_4_1'] = Apps_clean['V4_4_Interview'] - \
+                       Apps_clean['V4_1_Interview']
 
 fig, axs = plt.subplots(4, sharex=True, sharey=True)
 fig.suptitle('V4 (frequency) difference between interviews',
@@ -352,12 +355,12 @@ fig.subplots_adjust(top=0.85, hspace=1.5)
 plt.show()
 
 pd.value_counts(Apps_clean['D4_4_3'])
-# COMMENTS: 
+# COMMENTS:
 # Most of the observations 50% didn't change with time
-# Biggest differences bewteen the second and first interview where 
+# Biggest differences bewteen the second and first interview where
 # where the frequency for 20% is increased by 1
 
-fig, axs = plt.subplots(nrows=1, ncols=4, sharex=True, 
+fig, axs = plt.subplots(nrows=1, ncols=4, sharex=True,
                         sharey=True, figsize=(15, 10))
 fig.suptitle('V4 Difference - Univariate Distribution',
              fontsize=15, fontweight='bold')
@@ -377,10 +380,14 @@ fig.subplots_adjust(hspace=0.8)
 plt.show()
 
 # V6
-Apps_clean['D6_2_1'] = Apps_clean['V6_2_Interview'] - Apps_clean['V6_1_Interview']
-Apps_clean['D6_3_2'] = Apps_clean['V6_3_Interview'] - Apps_clean['V6_2_Interview']
-Apps_clean['D6_4_3'] = Apps_clean['V6_4_Interview'] - Apps_clean['V6_3_Interview']
-Apps_clean['D6_4_1'] = Apps_clean['V6_4_Interview'] - Apps_clean['V6_1_Interview']
+Apps_clean['D6_2_1'] = Apps_clean['V6_2_Interview'] - \
+                       Apps_clean['V6_1_Interview']
+Apps_clean['D6_3_2'] = Apps_clean['V6_3_Interview'] - \
+                       Apps_clean['V6_2_Interview']
+Apps_clean['D6_4_3'] = Apps_clean['V6_4_Interview'] - \
+                       Apps_clean['V6_3_Interview']
+Apps_clean['D6_4_1'] = Apps_clean['V6_4_Interview'] - \
+                       Apps_clean['V6_1_Interview']
 
 fig, axs = plt.subplots(4, sharex=True, sharey=True)
 fig.suptitle('V6 (function) difference between interviews',
@@ -419,7 +426,7 @@ plt.show()
 # ## STEP 1: V6_1 on V4_1
 
 model1 = stm.OLS(Apps_clean['V4_1_Interview'],
-                stm.add_constant(Apps_clean['V6_1_Interview'])).fit()
+                 stm.add_constant(Apps_clean['V6_1_Interview'])).fit()
 print(model1.summary())
 
 # V6_1 coef is significant one unit in increase of functionality
@@ -427,7 +434,7 @@ print(model1.summary())
 # (Remember with frequency less is more)
 # TODO consider to invert Frequency so it is more intuitive
 
-## STEP 2: V6_1 on V2
+# STEP 2: V6_1 on V2
 # check mediator effect
 
 # Create dummy variable for V2
@@ -440,13 +447,13 @@ print(logit2.summary())
 # V6_1_Interview is significant with p = 0.009
 # TODO check interpretation of logit function
 
-## STEP 3: V6_1, V2 ---> V4_1
+# STEP 3: V6_1, V2 ---> V4_1
 
 del X
 X = np.hstack([Apps_clean['V6_1_Interview'].values.reshape(-1, 1), V2])
 
 model3 = stm.OLS(Apps_clean['V4_1_Interview'],
-                stm.add_constant(X)).fit()
+                 stm.add_constant(X)).fit()
 print(model3.summary())
 
 # Coefs are all significant --> Partial mediation
@@ -488,14 +495,14 @@ print(model.summary())
 
 # STEP 1: V4 <--- V10
 model = stm.OLS(Apps_clean['V4_1_Interview'],
-                stm.add_constant(Apps_clean['V10'].\
+                stm.add_constant(Apps_clean['V10'].
                                  values.reshape(-1, 1))).fit()
 print(model.summary())
 
 # %%
 # STEP 2: V2 <--- V10
 logit = stm.Logit(V2,
-                  stm.add_constant(Apps_clean['V10'].\
+                  stm.add_constant(Apps_clean['V10'].
                                    values.reshape(-1, 1))).fit()
 print(logit.summary())
 
@@ -508,7 +515,7 @@ print(model.summary())
 
 # %%
 # STEP 4: V3 <--- V10
-logit = stm.Logit(V3, stm.add_constant(Apps_clean['V10'].\
+logit = stm.Logit(V3, stm.add_constant(Apps_clean['V10'].
                   values.reshape(-1, 1))).fit()
 print(logit.summary())
 
@@ -526,6 +533,3 @@ X = np.hstack([model.resid.values.reshape(-1, 1),
                Apps_clean['V17_2_Interview'].values.reshape(-1, 1)])
 model = stm.OLS(Apps_clean['V4_1_Interview'], stm.add_constant(X)).fit()
 print(model.summary())
-
-## code after the meeting 10.10.2019
-
