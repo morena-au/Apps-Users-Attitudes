@@ -525,9 +525,9 @@ fig.subplots_adjust(hspace=0.8)
 plt.show()
 
 # %% [markdown]
-# Comment:
-# 1. Median across interviews is the same
-# 2. Hedonic apps (2.0) are in average more frequenctly used
+# **COMMENT**: <br />
+# - Median across interviews is the same <br />
+# - Hedonic apps (2.0) are in average more frequenctly used
 
 # %%
 # Dependent variable distribution
@@ -551,8 +551,8 @@ fig.subplots_adjust(hspace=0.8)
 plt.show()
 
 # %% [markdown]
-# Comment:
-# The distribution of frequency seems to be the same across interviews
+# **COMMENT**: <br />
+# - The distribution of frequency seems to be the same across interviews
 
 # %%
 # create a dummy variable
@@ -568,8 +568,8 @@ model = stm.OLS(Apps_clean['V4_1_Interview'], stm.add_constant(X)).fit()
 print(model.summary())
 
 # %% [markdown]
-# b0 interpreted as the average frequency among utilitarian apps
-# b0 + b1 average frequency among hendonic apps
+# *b0* interpreted as the average frequency among utilitarian apps. <br />
+# *b0 + b1* average frequency among hendonic apps. <br />
 # P-values are very low. This indicates that there is statistical
 # evidence of a difference in average frequency between V2
 # (utilitarian vs. hedonic apps), but it does not explain variance
@@ -670,7 +670,7 @@ plt.title('V6 Number of functions [1--, 10++] vs V4 Frequency [1++, 7--] ',
 plt.show()
 
 # %% [markdown]
-# COMMENT:
+# **COMMENT**: <br />
 # Apps with more functions tend to be used more.
 
 # %%
@@ -679,9 +679,9 @@ model = stm.OLS(Apps_clean.loc[:, 'V4_1_Interview'],
                 stm.add_constant(Apps_clean.loc[:, 'V6_1_Interview'])).fit()
 print(model.summary())
 
-# %% [markdowns]
-# P-value and low R-squarred: the regression model has significant variables
-# but explains little of the variability.
+# %% [markdown]
+# P-value and R-squarred are low: the regression model has significant
+# variables but explains little of the variability.
 # The trend indicates that the predictor vairable still provides information
 # about the response even though data points fall
 # further from the regression line.
@@ -698,8 +698,8 @@ plt.title('V10 Extended functions [1--, 10++] vs V4 Frequency [1++, 7--] ',
           x=20, y=1.8, fontsize=15, fontweight='bold')
 plt.show()
 
-# %%
-# V10 cannot explain variability since almost all in 1
+# %% [markdown]
+# V10 cannot explain variability since almost all in 1. <br />
 # feature engineering binarize (always - not always)
 
 # %% [markdown]
@@ -714,8 +714,8 @@ plt.title('V11 Cross Apps Use [1--, 10++] vs V4 Frequency [1++, 7--] ',
           x=20, y=1.8, fontsize=15, fontweight='bold')
 plt.show()
 
-# %%
-# V11 cannot explain variability since almost all in 1
+# %% [markdown]
+# V11 cannot explain variability since almost all in 1. <br />
 # feature engineering binarize (always - not always)
 
 # %% [markdown]
@@ -760,13 +760,13 @@ model = stm.OLS(Apps_clean.loc[:, 'V4_1_Interview'],
 print(model.summary())
 
 # %% [markdown]
-# COMMENTS:
-# 1. Statistic evidence different means
-# 2. Don't change over time (look distribution)
-# 3. People more satisfy tend to use the app moren
+# **COMMENTS**:<br />
+# - Statistic evidence different means
+# - Don't change over time (look distribution)
+# - People more satisfy tend to use the app moren
 
 # %% [markdown]
-# Linear Regression between V4 and V13 Future use [1--, 10++]
+# Linear Regression between V4 and V13 Future use \[1--, 10++\]
 
 # %%
 pd.value_counts(Apps_clean['V13'])
@@ -779,7 +779,7 @@ plt.title('V13 Future Use [1--, 10++] vs V4 Frequency [1++, 7--] ',
 plt.show()
 
 # %% [markdown]
-# High 10 in V3
+# High 10s in V3
 
 # %%
 # create the model using statsmodels.api
@@ -788,12 +788,12 @@ model = stm.OLS(Apps_clean.loc[:, 'V4_1_Interview'],
 print(model.summary())
 
 # %% [markdown]
-# 1. Statistic evidence different means
-# 2. More future use tend to use the app more
+# **COMMENT**: <br />
+# - Statistic evidence different means <br />
+# - More future use tend to use the app more
 
 # %% [markdown]
-# Linear Regression between V4 and V14 recommendation [1--,10++]
-pd.value_counts(Apps_clean['V14'])
+# Linear Regression between V4 and V14 recommendation \[1--,10++\]
 
 # %%
 sns.kdeplot(Apps_clean['V12_1_Interview'], shade=True)
@@ -803,8 +803,9 @@ plt.title('Univariate distribution of V12, V13, V14')
 plt.show()
 
 # %% [markdown]
+# **COMMENT**: <br />
 # Univariate distribution shows higher values for V12, V13, V14
-# with a weaker effect fro V14
+# with a weaker effect for V14
 
 # %%
 # So I expect the same behaviour of V12, V13, V14
@@ -850,16 +851,17 @@ sns.heatmap(corr, center=0, linewidths=0.5)
 plt.show()
 
 # %% [markdown]
+# **COMMENT**:<br />
 # V17, V18, V19, V20, V21 show positive correlation between the
 # dependent variables and negative correlation with V4.
-# V18 weaker than other
+# V18 weaker than other.
 
 # %% [markdown]
 # ## 2. MODELLING
 # Multi variate statistics and mediation relationship
 
 # %% [markdown]
-# #### 1. check assumptions that observations are time independent
+# #### Check assumptions that observations are time independent
 # %%
 # V4
 Apps_clean.loc[:, 'D4_2_1'] = Apps_clean.loc[:, 'V4_2_Interview'] - \
@@ -890,10 +892,10 @@ fig.subplots_adjust(top=0.85, hspace=1.5)
 plt.show()
 
 # %% [markdown]
-# COMMENTS:
+# **COMMENTS**: <br />
 # Most of the observations 50% didn't change with time
 # Biggest differences bewteen the second and first interview where
-# where the frequency for 20% is increased by 1
+# the frequency of 20% obs is increased by 1.
 
 # %%
 fig, axs = plt.subplots(nrows=1, ncols=4, sharex=True,
@@ -945,13 +947,13 @@ fig.subplots_adjust(top=0.85, hspace=1.5)
 plt.show()
 
 # %% [markdown]
-# COMMENTS:
-# Most of the observations didn't change with the time
-# biggest difference are within the 2 and 3 interview.
+# **COMMENTS**: <br />
+# Most of the observations didn't change with the time.
+# Biggest difference are within the 2 and 3 interview.
 # In the second interview 20% observations increase frequency by 1
-# and another 20% decrease by 1
-# In the third inteview 20% observation increase by 1
-# this accumulative effect is incorporate in D6_4_1
+# and another 20% decrease by 1.
+# In the third inteview 20% observation increase by 1.
+# This accumulative effect is incorporate in D6_4_1.
 
 # %%
 # V12
@@ -982,14 +984,14 @@ axs[3].set_title('{}'.format(pd.DataFrame.describe(Apps_clean['D12_4_1'])),
 fig.subplots_adjust(top=0.85, hspace=1.5)
 plt.show()
 
-# %% [Markdown]
-# Comments:
-# There are some level off effects
-# Investigate further relationship TODO
+# %% [markdown]
+# **COMMENT**: <br />
+# There are some "level off" effects.
+# Investigate further the relationship (TODO)
 
-# %% [Markdown]
-# ### MODEL 1a: V6_1, V2 ---> V4_1
-# ## STEP 1: V6_1 on V4_1
+# %% [markdown]
+# #### MODEL 1a: V6_1, V2 ---> V4_1
+# **STEP** **1**: V6_1 on V4_1
 
 # %%
 # Model V6 on V4 at the starting point, during the interview 1
@@ -1001,12 +1003,13 @@ model1 = stm.OLS(Apps_clean.loc[:, 'V4_1_Interview'],
 print(model1.summary())
 
 # %% [markdown]
-# V6_1 coef is significant one unit in increase of functionality
+# **COMMENT**: <br />
+# *V6_1* coef is significant one unit in increase of functionality
 # brings -0.2277 decrease in frequency (Remember with frequency less is more)
-# TODO consider to invert Frequency so it is more intuitive
+# (TODO) consider to invert Frequency so it is more intuitive
 
-# %% [Markdown]
-# ## STEP 2: V6_1 on V2
+# %% [markdown]
+# **STEP** **2**: V6_1 on V2
 
 # %%
 # Check mediator effect
@@ -1020,16 +1023,17 @@ logit2 = stm.Logit(V2, stm.add_constant(Apps_clean.
 print(logit2.summary())
 
 # %% [markdown]
-# V6_1_Interview is significant with p = 0.009
-# the intercept is the estimated log odds (log(p/1-p)) of an app with a number
-# of functions of zero being an hedonic apps
-# The conditional logit of being in an hedonic app when the number of functions
-# is held to 5: b0 + b1*V6 >> -0,3297 + (0,0356*5)
+# **COMMENT**: <br />
+# *V6_1_Interview* is significant with p = 0.009. <br />
+# The intercept is the estimated log odds (log(p/1-p)) of an app with a number
+# of functions (*V6*) of zero being an hedonic apps (*V2*).<br />
+# The conditional logit of being an hedonic app when the number of functions
+# is held to 5: $b0 + b1*V6 >> -0,3297 + (0,0356*5)$<br />
 # For 1 unit increase in the number function, the expected change in the log
-# odds of being an hedonic app is b1 = 0,0356.
+# odds of being an hedonic app is $b1 = 0,0356§.
 
 # %% [markdown]
-# ## STEP 3: V6_1, V2 ---> V4_1
+# **STEP** **3**: V6_1, V2 ---> V4_1
 
 # %%
 del X
@@ -1075,33 +1079,35 @@ med_result = med.fit()
 
 med_result.summary()
 
+# %% [markdown]
+# **COMMENT**:<br />
+# The *ACME* (Average Causal Mediation Effect) is not statistically
+# distinct from zero.
+
+# %% [markdown]
+# #### Model 1b: D6_4_1, V2 ---> D4_4_1 <br />
+# Model the difference in number of functions (*V6*) onto the
+# difference in frequency (*V4*) mediating for *V2*.
+# (Since differences within interviews seems to be commulative,
+# thus changes does not seems to level out >> check further on outliers
+# to spot trends within time. TODO)
+
+# %% [markdown]
+# **STEP** **1**: D6_4_1 on D4_4_1
+
 # %%
-# Comments:
-# The ACME (average causal mediation effect) is not statistically
-# distinct from zero
-
-# %% [Markdown]
-# ### Model 1b: D6_4_1, V2 ---> D4_4_1
-# Model the difference in number of functions onto the difference in frequency
-# mediating for V2.
-# (Since differences within interviews seems to be commulative)
-# TODO
-# (thus changes does not seems to level out >> check further on outliers
-# to spot trends within time)
-
-# ## STEP 1: D6_4_1 on D4_4_1
 model1 = stm.OLS(Apps_clean.loc[:, 'D4_4_1'],
                  stm.add_constant(Apps_clean.loc[:, 'D6_4_1'])).fit()
 print(model1.summary())
 
 # %% [markdown]
-# Comments
-# Statistical evidence means between D4_4_1 and D&_4_1
-# Increments of function uses creats reduction of frequency values,
+# **COMMENT**:<br />
+# Statistical evidence means between *D4_4_1* and *D6_4_1*. <br />
+# Increments of function reduce frequency values,
 # which translate that the apps is used more (and viceversa)
 
-# %% [Markdown]
-# ## STEP 2: D6_4_1 on V2
+# %% [markdown]
+# **STEP** **2**: D6_4_1 on V2
 
 # %%
 # Check mediator effect
@@ -1113,14 +1119,15 @@ logit2 = stm.Logit(V2, stm.add_constant(Apps_clean.
 print(logit2.summary())
 
 # %% [markdown]
-# Comments
-# With a p-value = 0,119 we fail to reject the null hypothesis
-# Since D6_4_1 is not significant, it cannot mediate anything
+# **COMMENT**: <br />
+# With a $p-value = 0,119$ we fail to reject the null hypothesis.
+# Since *D6_4_1* is not significant, it cannot mediate anything.
 
-# %% [Markdown]
-# ### MODEL 2a
-# ## STEP 1: V6_1, V12_1, V2, V3 ---> V4_1
+# %% [markdown]
+# #### MODEL 2a
+# **STEP** **1**: V6_1, V12_1, V2, V3 ---> V4_1
 
+# %%
 del X
 V3 = V3_enc.transform(Apps_clean['V3'].values.reshape(-1, 1)).toarray()
 X = np.hstack([Apps_clean.loc[:, 'V6_1_Interview'].values.reshape(-1, 1),
@@ -1132,13 +1139,15 @@ model1 = stm.OLS(Apps_clean.loc[:, 'V4_1_Interview'],
 print(model1.summary())
 
 # %% [markdown]
-# COMMENTS:
-# Coefs are all statisticaly significant
-# V3 lower significance (information already covered by V2)
+# **COMMENT**: <br />
+# Coefs are all statisticaly significant.
+# *V3* lower significance (information already covered by V2).
 
 # %% [markdown]
-# ## STEP 2: mediation effects
+# **STEP** **2**: mediation effects. <br />
 # Reference Imai, Keele, Tingley (2010)
+
+# %%
 Apps_clean['V3'] = V3_enc.transform(Apps_clean['V3'].
                                     values.reshape(-1, 1)).toarray()
 
@@ -1161,9 +1170,9 @@ med_result = med.fit()
 med_result.summary()
 
 # %% [markdown]
-# Comments:
-# ACME (Average Causal Mediation Effect)
-# ADE (Average Direct Effect)
+# **COMMENT**: <br />
+# *ACME* (Average Causal Mediation Effect). <br />
+# *ADE* (Average Direct Effect). <br />
 # The results above demonstrate that the ACME is not statistically distinct
 # from zero, or no mediation. The average direct effect (ADE) is negative
 # and statistically notable. The total effect is statistically notable and it
@@ -1187,7 +1196,7 @@ med_result = med.fit()
 med_result.summary()
 
 # %% [markdown]
-# Comments:
+# **COMMENT**: <br />
 # Only direct effect is statistically significant
 
 # %%
@@ -1208,7 +1217,7 @@ med_result = med.fit()
 med_result.summary()
 
 # %% [markdown]
-# Comments:
+# **COMMENT**: <br />
 # Only direct effect is significant
 
 # %%
@@ -1229,7 +1238,7 @@ med_result = med.fit()
 med_result.summary()
 
 # %% [markdown]
-# Comments:
+# **COMMENT**: <br />
 # Only Average Direct Effect statistically significant
 
 # %%
@@ -1250,8 +1259,8 @@ med_result = med.fit()
 med_result.summary()
 
 # %% [markdown]
-# Comments:
-# With a p-value of 0.014 also the Average Causal Mediation Effect is
+# **COMMENT**: <br />
+# With a $p-value = 0.014$ also the Average Causal Mediation Effect is
 # statistically significant.
 
 # %%
@@ -1272,14 +1281,15 @@ med_result = med.fit()
 med_result.summary()
 
 # %% [markdown]
-# Comments:
-# With a p-value of 0.0 the Average Direct Effect and the Average Causal
+# **COMMENT**:<br />
+# With a $p-value=0.0$ the Average Direct Effect and the Average Causal
 # Mediation Effect are both statistically significant
 
 # %% [markdown]
-# ### MODEL 2b: A modereted mediation analysis
-# Add novelty seeking
+# #### MODEL 2b: A modereted mediation analysis<br />
 
+# %%
+# Add novelty seeking.
 clean_NS = pd.merge(Apps_clean, Personality.loc[:, ['Probanden_ID__lfdn',
                                                     'NovSeek']],
                     on='Probanden_ID__lfdn')
@@ -1287,6 +1297,7 @@ clean_NS = pd.merge(Apps_clean, Personality.loc[:, ['Probanden_ID__lfdn',
 # NovSeek avereage between [1--, 10++]
 pd.DataFrame.describe(clean_NS['NovSeek'])
 
+# %%
 # The midiation effect is computed for people with high novelty seeking
 # V6*V2
 # Regression model for the outcome
@@ -1305,9 +1316,10 @@ med = Mediation(outcome_model, mediator_model, 'V6_1_Interview', 'V2',
 med.summary()
 
 # %% [markdown]
-# Comments:
+# **COMMENT**: <br />
 # Only direct effect is significant
 
+# %%
 outcome_model = stm.OLS.from_formula('V4_1_Interview ~ V6_1_Interview + \
                                      V12_1_Interview + V3 + V2 + NovSeek',
                                      data=clean_NS)
@@ -1322,14 +1334,15 @@ med = Mediation(outcome_model, mediator_model, 'V6_1_Interview',
 med.summary()
 
 # %% [markdown]
-# Comments:
-# Only direct effect is significant
+# **COMMENT**: <br />
+# Only direct effect is significant.
 
 # %% [Markdown]
-# ### : Missing Values Analysis
-Apps_missing = Apps.drop(list(Apps_clean.index))
+# #### Missing Values Analysis
 
 # %%
+Apps_missing = Apps.drop(list(Apps_clean.index))
+
 # Difference in V6 for the missing and clean dataset
 V6_clean_1 = pd.DataFrame.describe(Apps_clean['V6_1_Interview'])
 V6_miss_1 = pd.DataFrame.describe(Apps_missing['V6_1_Interview'])
@@ -1360,5 +1373,5 @@ fig.subplots_adjust(top=0.85, hspace=0.8)
 plt.show()
 
 # %% [markdown]
-# Comments
-# No difference between the two datasets
+# **COMMENT**: <br />
+# No difference between the two datasets.
