@@ -308,6 +308,7 @@ Apps['Days_Between_4_and_3_Interview'] = \
                                                      x.total_seconds() /
                                                      60/60/24)
 
+# %%
 # Plot the different frequency graphs
 descriptive_2_1 = pd.DataFrame.describe(Apps['Days_Between_2_and_1_Interview'])
 descriptive_3_2 = pd.DataFrame.describe(Apps['Days_Between_3_and_2_Interview'])
@@ -873,21 +874,21 @@ Apps_clean.loc[:, 'D4_4_3'] = Apps_clean.loc[:, 'V4_4_Interview'] - \
 Apps_clean.loc[:, 'D4_4_1'] = Apps_clean.loc[:, 'V4_4_Interview'] - \
                               Apps_clean.loc[:, 'V4_1_Interview']
 
-fig, axs = plt.subplots(4, sharex=True, sharey=True)
+fig, axs = plt.subplots(4, sharex=True, sharey=True, figsize=(15, 15))
 fig.suptitle('V4 (frequency) difference between interviews',
              fontsize=18, fontweight='bold')
 sns.boxplot(Apps_clean['D4_2_1'], ax=axs[0])
 axs[0].set_title('{}'.format(pd.DataFrame.describe(Apps_clean['D4_2_1'])),
-                 fontsize=9)
+                 fontsize=10)
 sns.boxplot(Apps_clean['D4_3_2'], ax=axs[1])
 axs[1].set_title('{}'.format(pd.DataFrame.describe(Apps_clean['D4_3_2'])),
-                 fontsize=9)
+                 fontsize=10)
 sns.boxplot(Apps_clean['D4_4_3'], ax=axs[2])
 axs[2].set_title('{}'.format(pd.DataFrame.describe(Apps_clean['D4_4_3'])),
-                 fontsize=9)
+                 fontsize=10)
 sns.boxplot(Apps_clean['D4_4_1'], ax=axs[3])
 axs[3].set_title('{}'.format(pd.DataFrame.describe(Apps_clean['D4_4_1'])),
-                 fontsize=9)
+                 fontsize=10)
 fig.subplots_adjust(top=0.85, hspace=1.5)
 plt.show()
 
@@ -904,16 +905,16 @@ fig.suptitle('V4 Difference - Univariate Distribution',
              fontsize=15, fontweight='bold')
 sns.distplot(Apps_clean['D4_2_1'], bins=np.arange(-6, 7),
              hist_kws=dict(ec="k"), kde=False, ax=axs[0])
-axs[0].set_title('V4 difference between 2 and 1 interview', fontsize=8)
+axs[0].set_title('V4 difference between 2 and 1 interview', fontsize=9)
 sns.distplot(Apps_clean['D4_3_2'], bins=np.arange(-6, 7),
              hist_kws=dict(ec="k"), kde=False, ax=axs[1])
-axs[1].set_title('V4 difference between 3 and 2 interview', fontsize=8)
+axs[1].set_title('V4 difference between 3 and 2 interview', fontsize=9)
 sns.distplot(Apps_clean['D4_4_3'], bins=np.arange(-6, 7),
              hist_kws=dict(ec="k"), kde=False, ax=axs[2])
-axs[2].set_title('V4 difference between 4 and 3 interview', fontsize=8)
+axs[2].set_title('V4 difference between 4 and 3 interview', fontsize=9)
 sns.distplot(Apps_clean['D4_4_1'], bins=np.arange(-6, 7),
              hist_kws=dict(ec="k"), kde=False, ax=axs[3])
-axs[3].set_title('V4 difference between 4 and 1 interview', fontsize=8)
+axs[3].set_title('V4 difference between 4 and 1 interview', fontsize=9)
 fig.subplots_adjust(hspace=0.8)
 plt.show()
 
@@ -928,21 +929,21 @@ Apps_clean['D6_4_3'] = Apps_clean['V6_4_Interview'] - \
 Apps_clean['D6_4_1'] = Apps_clean['V6_4_Interview'] - \
                        Apps_clean['V6_1_Interview']
 
-fig, axs = plt.subplots(4, sharex=True, sharey=True)
+fig, axs = plt.subplots(4, sharex=True, sharey=True, figsize=(15, 15))
 fig.suptitle('V6 (function) difference between interviews',
              fontsize=18, fontweight='bold')
 sns.boxplot(Apps_clean['D6_2_1'], ax=axs[0])
 axs[0].set_title('{}'.format(pd.DataFrame.describe(Apps_clean['D6_2_1'])),
-                 fontsize=9)
+                 fontsize=10)
 sns.boxplot(Apps_clean['D6_3_2'], ax=axs[1])
 axs[1].set_title('{}'.format(pd.DataFrame.describe(Apps_clean['D6_3_2'])),
-                 fontsize=9)
+                 fontsize=10)
 sns.boxplot(Apps_clean['D6_4_3'], ax=axs[2])
 axs[2].set_title('{}'.format(pd.DataFrame.describe(Apps_clean['D6_4_3'])),
-                 fontsize=9)
+                 fontsize=10)
 sns.boxplot(Apps_clean['D6_4_1'], ax=axs[3])
 axs[3].set_title('{}'.format(pd.DataFrame.describe(Apps_clean['D6_4_1'])),
-                 fontsize=9)
+                 fontsize=10)
 fig.subplots_adjust(top=0.85, hspace=1.5)
 plt.show()
 
@@ -966,21 +967,21 @@ Apps_clean['D12_4_3'] = Apps_clean['V12_4_Interview'] - \
 Apps_clean['D12_4_1'] = Apps_clean['V12_4_Interview'] - \
                        Apps_clean['V12_1_Interview']
 
-fig, axs = plt.subplots(4, sharex=True, sharey=True)
+fig, axs = plt.subplots(4, sharex=True, sharey=True, figsize=(15, 15))
 fig.suptitle('V12 (satisfaction) difference between interviews',
              fontsize=18, fontweight='bold')
 sns.boxplot(Apps_clean['D12_2_1'], ax=axs[0])
 axs[0].set_title('{}'.format(pd.DataFrame.describe(Apps_clean['D12_2_1'])),
-                 fontsize=9)
+                 fontsize=10)
 sns.boxplot(Apps_clean['D12_3_2'], ax=axs[1])
 axs[1].set_title('{}'.format(pd.DataFrame.describe(Apps_clean['D12_3_2'])),
-                 fontsize=9)
+                 fontsize=10)
 sns.boxplot(Apps_clean['D12_4_3'], ax=axs[2])
 axs[2].set_title('{}'.format(pd.DataFrame.describe(Apps_clean['D12_4_3'])),
-                 fontsize=9)
+                 fontsize=10)
 sns.boxplot(Apps_clean['D12_4_1'], ax=axs[3])
 axs[3].set_title('{}'.format(pd.DataFrame.describe(Apps_clean['D12_4_1'])),
-                 fontsize=9)
+                 fontsize=10)
 fig.subplots_adjust(top=0.85, hspace=1.5)
 plt.show()
 
@@ -999,7 +1000,8 @@ plt.show()
 # does not change in the following interviews)
 # Mediating for V2 using simple mediation model by Baron and Kenny's
 model1 = stm.OLS(Apps_clean.loc[:, 'V4_1_Interview'],
-                 stm.add_constant(Apps_clean.loc[:, 'V6_1_Interview'])).fit()
+                 stm.add_constant(Apps_clean.loc[:, 'V6_1_Interview'].
+                                  values.reshape(-1, 1))).fit()
 print(model1.summary())
 
 # %% [markdown]
@@ -1019,7 +1021,8 @@ V2 = V2_enc.transform(Apps_clean.loc[:, 'V2'].values.reshape(-1, 1)).toarray()
 # 0 if ith apps is utilitarian
 
 logit2 = stm.Logit(V2, stm.add_constant(Apps_clean.
-                                        loc[:, 'V6_1_Interview'])).fit()
+                                        loc[:, 'V6_1_Interview'].
+                                        values.reshape(-1, 1))).fit()
 print(logit2.summary())
 
 # %% [markdown]
@@ -1097,7 +1100,8 @@ med_result.summary()
 
 # %%
 model1 = stm.OLS(Apps_clean.loc[:, 'D4_4_1'],
-                 stm.add_constant(Apps_clean.loc[:, 'D6_4_1'])).fit()
+                 stm.add_constant(Apps_clean.loc[:, 'D6_4_1'].
+                                  values.reshape(-1, 1))).fit()
 print(model1.summary())
 
 # %% [markdown]
@@ -1113,7 +1117,8 @@ print(model1.summary())
 # Check mediator effect
 
 logit2 = stm.Logit(V2, stm.add_constant(Apps_clean.
-                                        loc[:, 'D6_4_1'])).fit()
+                                        loc[:, 'D6_4_1'].
+                                        values.reshape(-1, 1))).fit()
 # 1 if ith apps is hedonic
 # 0 if ith apps is utilitarian
 print(logit2.summary())
@@ -1347,13 +1352,13 @@ Apps_missing = Apps.drop(list(Apps_clean.index))
 V6_clean_1 = pd.DataFrame.describe(Apps_clean['V6_1_Interview'])
 V6_miss_1 = pd.DataFrame.describe(Apps_missing['V6_1_Interview'])
 
-fig, axs = plt.subplots(2, sharex=True, sharey=True, figsize=(15, 10))
+fig, axs = plt.subplots(2, sharex=True, sharey=True, figsize=(15, 13))
 fig.suptitle('V6 (frequency) within clean and missing observations',
              fontsize=15, fontweight='bold')
 sns.boxplot(Apps_clean['V6_1_Interview'], ax=axs[0])
-axs[0].set_title('{}'.format(V6_clean_1), fontsize=9, fontweight='bold')
+axs[0].set_title('{}'.format(V6_clean_1), fontsize=10)
 sns.boxplot(Apps_missing['V6_1_Interview'], ax=axs[1])
-axs[1].set_title('{}'.format(V6_miss_1), fontsize=9, fontweight='bold')
+axs[1].set_title('{}'.format(V6_miss_1), fontsize=10)
 fig.subplots_adjust(top=0.85, hspace=0.8)
 plt.show()
 
@@ -1362,14 +1367,14 @@ plt.show()
 V12_clean_1 = pd.DataFrame.describe(Apps_clean['V12_1_Interview'])
 V12_miss_1 = pd.DataFrame.describe(Apps_missing['V12_1_Interview'])
 
-fig, axs = plt.subplots(2, sharex=True, sharey=True, figsize=(15, 10))
+fig, axs = plt.subplots(2, sharex=True, sharey=True, figsize=(15, 13))
 fig.suptitle('V12 (satisfaction) within clean and missing observations',
              fontsize=15, fontweight='bold')
 sns.boxplot(Apps_clean['V12_1_Interview'], ax=axs[0])
-axs[0].set_title('{}'.format(V12_clean_1), fontsize=9, fontweight='bold')
+axs[0].set_title('{}'.format(V12_clean_1), fontsize=10)
 sns.boxplot(Apps_missing['V12_1_Interview'], ax=axs[1])
-axs[1].set_title('{}'.format(V12_miss_1), fontsize=9, fontweight='bold')
-fig.subplots_adjust(top=0.85, hspace=0.8)
+axs[1].set_title('{}'.format(V12_miss_1), fontsize=10)
+fig.subplots_adjust(top=0.84, hspace=0.5)
 plt.show()
 
 # %% [markdown]
