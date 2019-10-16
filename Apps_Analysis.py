@@ -658,6 +658,7 @@ axs[3].set_title('Forth Interview')
 fig.subplots_adjust(hspace=0.8)
 plt.show()
 
+
 # %% [markdown]
 # V6 distribution does not seems to change across interviews
 
@@ -669,6 +670,7 @@ plt.colorbar(cax=cbar_ax)
 plt.title('V6 Number of functions [1--, 10++] vs V4 Frequency [1++, 7--] ',
           x=20, y=1.8, fontsize=15, fontweight='bold')
 plt.show()
+
 
 # %% [markdown]
 # **COMMENT**: <br />
@@ -990,358 +992,6 @@ plt.show()
 # There are some "level off" effects.
 # Investigate further the relationship (TODO)
 
-# %% [markdown]
-# #### MODEL 1a: V6_1, V2 ---> V4_1
-# **STEP** **1**: V6_1 on V4_1
-
-# %%
-# Model V6 on V4 at the starting point, during the interview 1
-# (since first interview good baseline since 50% of observation
-# does not change in the following interviews)
-# Mediating for V2 using simple mediation model by Baron and Kenny's
-model1 = stm.OLS(Apps_clean.loc[:, 'V4_1_Interview'],
-                 stm.add_constant(Apps_clean.loc[:, 'V6_1_Interview'].
-                                  values.reshape(-1, 1))).fit()
-print(model1.summary())
-
-# %% [markdown]
-# **COMMENT**: <br />
-# *V6_1* coef is significant one unit in increase of functionality
-# brings -0.2277 decrease in frequency (Remember with frequency less is more)
-# (TODO) consider to invert Frequency so it is more intuitive
-
-# %% [markdown]
-# **STEP** **2**: V6_1 on V2
-
-# %%
-# Check mediator effect
-# Create dummy variable for V2
-V2 = V2_enc.transform(Apps_clean.loc[:, 'V2'].values.reshape(-1, 1)).toarray()
-# 1 if ith apps is hedonic
-# 0 if ith apps is utilitarian
-
-logit2 = stm.Logit(V2, stm.add_constant(Apps_clean.
-                                        loc[:, 'V6_1_Interview'].
-                                        values.reshape(-1, 1))).fit()
-print(logit2.summary())
-
-# %% [markdown]
-# **COMMENT**: <br />
-# *V6_1_Interview* is significant with p = 0.009. <br />
-# The intercept is the estimated log odds (log(p/1-p)) of an app with a number
-# of functions (*V6*) of zero being an hedonic apps (*V2*).<br />
-# The conditional logit of being an hedonic app when the number of functions
-# is held to 5: $b0 + b1*V6 >> -0,3297 + (0,0356*5)$<br />
-# For 1 unit increase in the number function, the expected change in the log
-# odds of being an hedonic app is $b1 = 0,0356§.
-
-# %% [markdown]
-# **STEP** **3**: V6_1, V2 ---> V4_1
-
-# %%
-del X
-X = np.hstack([Apps_clean['V6_1_Interview'].values.reshape(-1, 1), V2])
-
-model3 = stm.OLS(Apps_clean.loc[:, 'V4_1_Interview'],
-                 stm.add_constant(X)).fit()
-print(model3.summary())
-
-# %% [markdown]
-# Coefs are all significant --> Partial mediation
-# %%
-# Direct effect of number of functions on frequency
-model1.params[1]
-# %%
-# Indirect effect
-logit2.params[1]*model3.params[2]
-# %%
-# Partial mediation coef V6 on step 1 greater then coef V6 step 3
-abs(model1.params[1]) > abs(model3.params[1])
-# %%
-# Total effect
-model3.params[1] + (logit2.params[1]*model3.params[2])
-
-# %%
-# Using mediation model in stasmodels (Imai, Keele, Tingley (2010))
-# Regression model for the outcome
-Apps_clean['V2'] = V3_enc.transform(Apps_clean['V2'].
-                                    values.reshape(-1, 1)).toarray()
-
-outcome_model = stm.OLS.from_formula('V4_1_Interview ~ V6_1_Interview + \
-                                     V2',
-                                     data=Apps_clean)
-
-# Regression model for the mediator variable
-mediator_model = stm.GLM.from_formula('V2 ~ V6_1_Interview ',
-                                      data=Apps_clean,
-                                      family=stm.families.Binomial())
-
-med = Mediation(outcome_model, mediator_model, 'V6_1_Interview', 'V2')
-
-med_result = med.fit()
-
-med_result.summary()
-
-# %% [markdown]
-# **COMMENT**:<br />
-# The *ACME* (Average Causal Mediation Effect) is not statistically
-# distinct from zero.
-
-# %% [markdown]
-# #### Model 1b: D6_4_1, V2 ---> D4_4_1 <br />
-# Model the difference in number of functions (*V6*) onto the
-# difference in frequency (*V4*) mediating for *V2*.
-# (Since differences within interviews seems to be commulative,
-# thus changes does not seems to level out >> check further on outliers
-# to spot trends within time. TODO)
-
-# %% [markdown]
-# **STEP** **1**: D6_4_1 on D4_4_1
-
-# %%
-model1 = stm.OLS(Apps_clean.loc[:, 'D4_4_1'],
-                 stm.add_constant(Apps_clean.loc[:, 'D6_4_1'].
-                                  values.reshape(-1, 1))).fit()
-print(model1.summary())
-
-# %% [markdown]
-# **COMMENT**:<br />
-# Statistical evidence means between *D4_4_1* and *D6_4_1*. <br />
-# Increments of function reduce frequency values,
-# which translate that the apps is used more (and viceversa)
-
-# %% [markdown]
-# **STEP** **2**: D6_4_1 on V2
-
-# %%
-# Check mediator effect
-
-logit2 = stm.Logit(V2, stm.add_constant(Apps_clean.
-                                        loc[:, 'D6_4_1'].
-                                        values.reshape(-1, 1))).fit()
-# 1 if ith apps is hedonic
-# 0 if ith apps is utilitarian
-print(logit2.summary())
-
-# %% [markdown]
-# **COMMENT**: <br />
-# With a $p-value = 0,119$ we fail to reject the null hypothesis.
-# Since *D6_4_1* is not significant, it cannot mediate anything.
-
-# %% [markdown]
-# #### MODEL 2a
-# **STEP** **1**: V6_1, V12_1, V2, V3 ---> V4_1
-
-# %%
-del X
-V3 = V3_enc.transform(Apps_clean['V3'].values.reshape(-1, 1)).toarray()
-X = np.hstack([Apps_clean.loc[:, 'V6_1_Interview'].values.reshape(-1, 1),
-              Apps_clean.loc[:, 'V12_1_Interview'].values.reshape(-1, 1),
-              V2, V3])
-
-model1 = stm.OLS(Apps_clean.loc[:, 'V4_1_Interview'],
-                 stm.add_constant(X)).fit()
-print(model1.summary())
-
-# %% [markdown]
-# **COMMENT**: <br />
-# Coefs are all statisticaly significant.
-# *V3* lower significance (information already covered by V2).
-
-# %% [markdown]
-# **STEP** **2**: mediation effects. <br />
-# Reference Imai, Keele, Tingley (2010)
-
-# %%
-Apps_clean['V3'] = V3_enc.transform(Apps_clean['V3'].
-                                    values.reshape(-1, 1)).toarray()
-
-# V6*V2
-# Regression model for the outcome
-outcome_model = stm.OLS.from_formula('V4_1_Interview ~ V6_1_Interview + \
-                                     V12_1_Interview + V3 + V2',
-                                     data=Apps_clean)
-
-# Regression model for the mediator variable
-mediator_model = stm.GLM.from_formula('V2 ~ V6_1_Interview + \
-                                       V12_1_Interview + V3',
-                                      data=Apps_clean,
-                                      family=stm.families.Binomial())
-
-med = Mediation(outcome_model, mediator_model, 'V6_1_Interview', 'V2')
-
-med_result = med.fit()
-
-med_result.summary()
-
-# %% [markdown]
-# **COMMENT**: <br />
-# *ACME* (Average Causal Mediation Effect). <br />
-# *ADE* (Average Direct Effect). <br />
-# The results above demonstrate that the ACME is not statistically distinct
-# from zero, or no mediation. The average direct effect (ADE) is negative
-# and statistically notable. The total effect is statistically notable and it
-# is driven by ADE.
-
-# %%
-# V12 * V2
-# Regression model for the outcome
-outcome_model = stm.OLS.from_formula('V4_1_Interview ~ V6_1_Interview + \
-                                     V12_1_Interview + V3 + V2',
-                                     data=Apps_clean)
-
-# Regression model for the mediator variable
-mediator_model = stm.GLM.from_formula('V2 ~ V6_1_Interview + \
-                                       V12_1_Interview + V3',
-                                      data=Apps_clean,
-                                      family=stm.families.Binomial())
-
-med = Mediation(outcome_model, mediator_model, 'V12_1_Interview', 'V2')
-med_result = med.fit()
-med_result.summary()
-
-# %% [markdown]
-# **COMMENT**: <br />
-# Only direct effect is statistically significant
-
-# %%
-# V6 * V3
-# Regression model for the outcome
-outcome_model = stm.OLS.from_formula('V4_1_Interview ~ V6_1_Interview + \
-                                     V12_1_Interview + V3 + V2',
-                                     data=Apps_clean)
-
-# Regression model for the mediator variable
-mediator_model = stm.GLM.from_formula('V3 ~ V6_1_Interview + \
-                                       V12_1_Interview + V2',
-                                      data=Apps_clean,
-                                      family=stm.families.Binomial())
-
-med = Mediation(outcome_model, mediator_model, 'V12_1_Interview', 'V3')
-med_result = med.fit()
-med_result.summary()
-
-# %% [markdown]
-# **COMMENT**: <br />
-# Only direct effect is significant
-
-# %%
-# V12 * V3
-# Regression model for the outcome
-outcome_model = stm.OLS.from_formula('V4_1_Interview ~ V6_1_Interview + \
-                                     V12_1_Interview + V3 + V2',
-                                     data=Apps_clean)
-
-# Regression model for the mediator variable
-mediator_model = stm.GLM.from_formula('V3 ~ V6_1_Interview + \
-                                       V12_1_Interview + V2',
-                                      data=Apps_clean,
-                                      family=stm.families.Binomial())
-
-med = Mediation(outcome_model, mediator_model, 'V12_1_Interview', 'V3')
-med_result = med.fit()
-med_result.summary()
-
-# %% [markdown]
-# **COMMENT**: <br />
-# Only Average Direct Effect statistically significant
-
-# %%
-# V2 * V3
-# Regression model for the outcome
-outcome_model = stm.OLS.from_formula('V4_1_Interview ~ V6_1_Interview + \
-                                     V12_1_Interview + V3 + V2',
-                                     data=Apps_clean)
-
-# Regression model for the mediator variable
-mediator_model = stm.GLM.from_formula('V3 ~ V6_1_Interview + \
-                                       V12_1_Interview + V2',
-                                      data=Apps_clean,
-                                      family=stm.families.Binomial())
-
-med = Mediation(outcome_model, mediator_model, 'V2', 'V3')
-med_result = med.fit()
-med_result.summary()
-
-# %% [markdown]
-# **COMMENT**: <br />
-# With a $p-value = 0.014$ also the Average Causal Mediation Effect is
-# statistically significant.
-
-# %%
-# V6 * V12
-# Regression model for the outcome
-outcome_model = stm.OLS.from_formula('V4_1_Interview ~ V6_1_Interview + \
-                                     V12_1_Interview + V3 + V2',
-                                     data=Apps_clean)
-
-# Regression model for the mediator variable
-mediator_model = stm.OLS.from_formula('V12_1_Interview ~ V6_1_Interview + \
-                                       V3 + V2',
-                                      data=Apps_clean)
-
-med = Mediation(outcome_model, mediator_model, 'V6_1_Interview',
-                'V12_1_Interview')
-med_result = med.fit()
-med_result.summary()
-
-# %% [markdown]
-# **COMMENT**:<br />
-# With a $p-value=0.0$ the Average Direct Effect and the Average Causal
-# Mediation Effect are both statistically significant
-
-# %% [markdown]
-# #### MODEL 2b: A modereted mediation analysis<br />
-
-# %%
-# Add novelty seeking.
-clean_NS = pd.merge(Apps_clean, Personality.loc[:, ['Probanden_ID__lfdn',
-                                                    'NovSeek']],
-                    on='Probanden_ID__lfdn')
-
-# NovSeek avereage between [1--, 10++]
-pd.DataFrame.describe(clean_NS['NovSeek'])
-
-# %%
-# The midiation effect is computed for people with high novelty seeking
-# V6*V2
-# Regression model for the outcome
-outcome_model = stm.OLS.from_formula('V4_1_Interview ~ V6_1_Interview*NovSeek \
-                                     + V12_1_Interview + V3 + V2*NovSeek',
-                                     data=clean_NS)
-
-# Regression model for the mediator variable
-mediator_model = stm.GLM.from_formula('V2 ~ V6_1_Interview*NovSeek + \
-                                       V12_1_Interview + V3',
-                                      data=clean_NS,
-                                      family=stm.families.Binomial())
-moderators = {'NovSeek': 10}
-med = Mediation(outcome_model, mediator_model, 'V6_1_Interview', 'V2',
-                moderators=moderators).fit()
-med.summary()
-
-# %% [markdown]
-# **COMMENT**: <br />
-# Only direct effect is significant
-
-# %%
-outcome_model = stm.OLS.from_formula('V4_1_Interview ~ V6_1_Interview + \
-                                     V12_1_Interview + V3 + V2 + NovSeek',
-                                     data=clean_NS)
-
-# Regression model for the mediator variable
-mediator_model = stm.OLS.from_formula('NovSeek ~ V6_1_Interview + \
-                                       V12_1_Interview + V3 + V2',
-                                      data=clean_NS)
-
-med = Mediation(outcome_model, mediator_model, 'V6_1_Interview',
-                'NovSeek').fit()
-med.summary()
-
-# %% [markdown]
-# **COMMENT**: <br />
-# Only direct effect is significant.
-
 # %% [Markdown]
 # #### Missing Values Analysis
 
@@ -1380,3 +1030,227 @@ plt.show()
 # %% [markdown]
 # **COMMENT**: <br />
 # No difference between the two datasets.
+
+
+# MAJOR VARIBLES CLEANING Interactive python !!
+# %reset_selective -f outbound
+# %reset_selective -f descriptive
+
+# del ax, axs, cbar_ax, col, cols, col_del, col_name, corr, dataframe_list
+# descriptive_2_1, descritpive_3_2, descriptive_4_3, fig, hexplot, i,
+# miss_cols_pct, model, num,
+# row, typo_date, typo_row_index, V10_outbound_idx, V11_outbound_idx,
+# V12_clean_1, V12_miss_1,
+# V12_outbound_idx, V13_outbound_idx, V14_outbound_idx, V1_merge,
+# V1_V01_miss_idx, V2_enc,
+# V2_outbound_idx, V3_enc, V3_outbound_idx, V4_1_outbound_idx,
+# V4_2_outbound_idx,
+# V4_3_outbound_idx, V4_4_outbound_idx, V6_clean_1, V6_miss_1,
+# V6_outbound_idx,
+# values_over_rows, X
+
+# NUMBER OF COMPLETE ANSWERS FOR V12 AND V6 ACROSS INTERVIEWS
+Apps_clean.shape[0]  # 2977
+
+# V2
+pd.value_counts(Apps_clean['V2'])
+# V3
+pd.value_counts(Apps_clean['V3'])
+# Description V6
+pd.DataFrame.describe(Apps_clean.loc[:, ['V6_1_Interview', 'V6_2_Interview',
+                                         'V6_3_Interview', 'V6_4_Interview']])
+# Description V12
+pd.DataFrame.describe(Apps_clean.loc[:, ['V12_1_Interview', 'V12_2_Interview',
+                                         'V12_3_Interview',
+                                         'V12_4_Interview']])
+
+# V2 differences in frequency between utilitarian and hedonic v4
+fig, axs = plt.subplots(nrows=1, ncols=4, sharex=True,
+                        sharey=True, figsize=(15, 10))
+fig.suptitle('V2 (Utilitarian vs. Hedonic) & V4 (Frequncy [1++, 7--])',
+             fontsize=15, fontweight='bold')
+sns.boxplot(x='V2', y='V4_1_Interview', data=Apps_clean,
+            ax=axs[0])
+axs[0].set_title('First Interview')
+sns.boxplot(x='V2', y='V4_2_Interview', data=Apps_clean,
+            ax=axs[1])
+axs[1].set_title('Second Interview')
+sns.boxplot(x='V2', y='V4_3_Interview', data=Apps_clean,
+            ax=axs[2])
+axs[2].set_title('Third Interview')
+sns.boxplot(x='V2', y='V4_4_Interview', data=Apps_clean,
+            ax=axs[3])
+axs[3].set_title('Forth Interview')
+fig.subplots_adjust(hspace=0.8)
+plt.show()
+
+# In general: frequency for V2, V3 [1, 2, 3 missing]
+Apps_missing[['V2', 'V3']] = Apps_missing[['V2', 'V3']].fillna('missing')
+# V2 missing dataset
+pd.value_counts(Apps_missing['V2'])
+# V3 missing dataset
+pd.value_counts(Apps_missing['V3'])
+
+# Detect groups with 1, 2, 3 non missing for V4, V6, V12
+
+Apps_missing['V4_Not_Miss'] = Apps_missing.loc[:, ['V4_1_Interview',
+                                                   'V4_2_Interview',
+                                                   'V4_3_Interview',
+                                                   'V4_4_Interview']
+                                               ].apply(lambda x:
+                                                       x.count(),
+                                                       axis=1)
+'''
+4 > no missing
+3 > 1 missing
+2 > 2 missing
+1 > 3 missing
+0 > all missing
+'''
+pd.value_counts(Apps_missing['V4_Not_Miss'])
+
+# count consecutive
+# for 1 > 3 missing = 90 count number on the first row should be 90
+Apps_missing[Apps_missing['V4_Not_Miss'] == 1].loc[:,  # all consecutive
+                                                   'V4_1_Interview'].count()
+
+# they are all consecutive
+
+# for 2 > 2 missing = 88 count number on the first 2 rows should be 88
+Apps_missing[Apps_missing['V4_Not_Miss'] == 2].loc[:, ['V4_1_Interview',
+                                                       'V4_2_Interview']
+                                                   ].apply(lambda x:
+                                                           x.count(),
+                                                           axis=0)
+# delete the non consecutive ones (5 rows)
+# for 3 > 1 missing = 273 count number on the first 3 rows should be 273
+Apps_missing[Apps_missing['V4_Not_Miss'] == 3
+             ].loc[:, ['V4_1_Interview',
+                       'V4_2_Interview',
+                       'V4_3_Interview']
+                   ].apply(lambda x:
+                           x.count(),
+                           axis=1).value_counts()
+
+# 0 or ‘index’: apply function to each column.
+# 1 or ‘columns’: apply function to each row.
+Apps_missing['V6_Not_Miss'] = Apps_missing.loc[:, ['V6_1_Interview',
+                                                   'V6_2_Interview',
+                                                   'V6_3_Interview',
+                                                   'V6_4_Interview']
+                                               ].apply(lambda x:
+                                                       x.count(),
+                                                       axis=1)
+pd.value_counts(Apps_missing['V6_Not_Miss'])
+
+# for 1 > 3 missing = 194 count number on the first row should be 194
+# all consecutive
+Apps_missing[Apps_missing['V6_Not_Miss'] == 1].loc[:, 'V6_1_Interview'].count()
+
+Apps_missing['V12_Not_Miss'] = Apps_missing.loc[:, ['V12_1_Interview',
+                                                    'V12_2_Interview',
+                                                    'V12_3_Interview',
+                                                    'V12_4_Interview']
+                                                ].apply(lambda x:
+                                                        x.count(),
+                                                        axis=1)
+pd.value_counts(Apps_missing['V12_Not_Miss'])
+
+# for 1 > 3 missing = 171 count number on the first row should be 171
+Apps_missing[Apps_missing['V12_Not_Miss'] == 1].loc[:,
+                                                    'V12_1_Interview'].count()
+
+# Group 1:
+group_1 = Apps_missing[(Apps_missing['V2'] != 'missing') &
+                       (Apps_missing['V3'] != 'missing') &
+                       (Apps_missing['V4_Not_Miss'] == 1) &
+                       (Apps_missing['V6_Not_Miss'] == 1) &
+                       (pd.notna(Apps_missing['V6_1_Interview'])) &
+                       (Apps_missing['V12_Not_Miss'] == 1) &
+                       (pd.notna(Apps_missing['V12_1_Interview']))]
+# Group 2:
+# from Here
+
+# For all
+fig, ax = plt.subplots()
+# title, number and legend
+sns.countplot(x='V2', hue='V3', data=Apps_clean, ax=ax)
+plt.show()
+
+# General for missing
+fig, ax = plt.subplots()
+sns.countplot(x='V2', hue='V3', data=Apps_missing, ax=ax)
+plt.show()
+
+# V12 Satisfaction distribution over groups and interviews
+fig, axs = plt.subplots(1, 4, sharex=True, sharey=True, figsize=(15, 10))
+fig.suptitle('V12 Satisfaction [1--, 10++] - \
+                Univariate Distribution across Groups',
+             fontsize=15, fontweight='bold')
+axs[0].set_title('First Interview')
+sns.kdeplot(Apps_clean['V12_1_Interview'], shade=True, ax=axs[0],
+            label='All Interviews')
+sns.kdeplot(group_1['V12_1_Interview'], shade=True, ax=axs[0],
+            label='1st Interview')
+axs[1].set_title('Second Interview')
+sns.kdeplot(Apps_clean['V12_2_Interview'], shade=True, ax=axs[1],
+            label='All Interviews')
+
+axs[2].set_title('Third Interview')
+sns.kdeplot(Apps_clean['V12_3_Interview'], shade=True, ax=axs[2],
+            label='All Interviews')
+
+axs[3].set_title('Third Interview')
+sns.kdeplot(Apps_clean['V12_4_Interview'], shade=True, ax=axs[3],
+            label='All Interviews')
+
+fig.subplots_adjust(hspace=0.8)
+plt.legend()
+plt.show()
+
+# V6 number of functions distribution over groups and interviews
+fig, axs = plt.subplots(1, 4, sharex=True, sharey=True, figsize=(15, 10))
+fig.suptitle('V6 # Functions [1--, 10++] - \
+                Univariate Distribution across Groups',
+             fontsize=15, fontweight='bold')
+axs[0].set_title('First Interview')
+sns.kdeplot(Apps_clean['V6_1_Interview'], shade=True, ax=axs[0],
+            label='All Interviews')
+sns.kdeplot(group_1['V6_1_Interview'], shade=True, ax=axs[0],
+            label='1st Interview')
+axs[1].set_title('Second Interview')
+sns.kdeplot(Apps_clean['V6_2_Interview'], shade=True, ax=axs[1],
+            label='All Interviews')
+
+axs[2].set_title('Third Interview')
+sns.kdeplot(Apps_clean['V6_3_Interview'], shade=True, ax=axs[2],
+            label='All Interviews')
+
+axs[3].set_title('Third Interview')
+sns.kdeplot(Apps_clean['V6_4_Interview'], shade=True, ax=axs[3],
+            label='All Interviews')
+
+fig.subplots_adjust(hspace=0.8)
+plt.legend()
+plt.show()
+
+# V2 differences in frequency between utilitarian and hedonic v4
+fig, axs = plt.subplots(nrows=1, ncols=4, sharex=True,
+                        sharey=True, figsize=(15, 10))
+fig.suptitle('GROUP 1: V2 (Utilitarian vs. Hedonic) & \
+                V4 (Frequncy [1++, 7--])',
+             fontsize=15, fontweight='bold')
+sns.boxplot(x='V2', y='V4_1_Interview', data=group_1,
+            ax=axs[0])
+axs[0].set_title('First Interview')
+sns.boxplot(x='V2', y='V4_2_Interview', data=group_1,
+            ax=axs[1])
+axs[1].set_title('Second Interview')
+sns.boxplot(x='V2', y='V4_3_Interview', data=group_1,
+            ax=axs[2])
+axs[2].set_title('Third Interview')
+sns.boxplot(x='V2', y='V4_4_Interview', data=group_1,
+            ax=axs[3])
+axs[3].set_title('Forth Interview')
+fig.subplots_adjust(hspace=0.8)
+plt.show()
