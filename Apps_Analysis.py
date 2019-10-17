@@ -1389,3 +1389,94 @@ plt.show()
 
 # COMMENT
 # Duringthe second interview decrese in used frequency
+
+# V6 differences in # functions between utilitarian and hedonic V2
+# GROUP 1
+fig, axs = plt.subplots(nrows=1, ncols=4, sharex=True,
+                        sharey=True, figsize=(15, 10))
+fig.suptitle('GROUP 1: V2 (Utilitarian vs. Hedonic) & \
+V6 (# Functions [1--, 10++])',
+             fontsize=15, fontweight='bold')
+sns.boxplot(x='V2', y='V6_1_Interview', data=group_1,
+            ax=axs[0])
+axs[0].set_title('First Interview')
+sns.boxplot(x='V2', y='V6_2_Interview', data=group_1,
+            ax=axs[1])
+axs[1].set_title('Second Interview')
+sns.boxplot(x='V2', y='V6_3_Interview', data=group_1,
+            ax=axs[2])
+axs[2].set_title('Third Interview')
+sns.boxplot(x='V2', y='V6_4_Interview', data=group_1,
+            ax=axs[3])
+axs[3].set_title('Forth Interview')
+fig.subplots_adjust(hspace=0.8)
+plt.show()
+
+# V6 differences in # functions between utilitarian and hedonic V2
+# GROUP 2
+fig, axs = plt.subplots(nrows=1, ncols=4, sharex=True,
+                        sharey=True, figsize=(15, 10))
+fig.suptitle('GROUP 2: V2 (Utilitarian vs. Hedonic) & \
+V6 (# Functions [1--, 10++])',
+             fontsize=15, fontweight='bold')
+sns.boxplot(x='V2', y='V6_1_Interview', data=group_2,
+            ax=axs[0])
+axs[0].set_title('First Interview')
+sns.boxplot(x='V2', y='V6_2_Interview', data=group_2,
+            ax=axs[1])
+axs[1].set_title('Second Interview')
+sns.boxplot(x='V2', y='V6_3_Interview', data=group_2,
+            ax=axs[2])
+axs[2].set_title('Third Interview')
+sns.boxplot(x='V2', y='V6_4_Interview', data=group_2,
+            ax=axs[3])
+axs[3].set_title('Forth Interview')
+fig.subplots_adjust(hspace=0.8)
+plt.show()
+
+# COMMENT
+# Duringthe second interview decrese in used frequency
+
+# V6 differences in # functions between utilitarian and hedonic V2
+# GROUP 3
+fig, axs = plt.subplots(nrows=1, ncols=4, sharex=True,
+                        sharey=True, figsize=(15, 10))
+fig.suptitle('GROUP 3: V2 (Utilitarian vs. Hedonic) & \
+V6 (# Functions [1--, 10++])',
+             fontsize=15, fontweight='bold')
+sns.boxplot(x='V2', y='V6_1_Interview', data=group_3,
+            ax=axs[0])
+axs[0].set_title('First Interview')
+sns.boxplot(x='V2', y='V6_2_Interview', data=group_3,
+            ax=axs[1])
+axs[1].set_title('Second Interview')
+sns.boxplot(x='V2', y='V6_3_Interview', data=group_3,
+            ax=axs[2])
+axs[2].set_title('Third Interview')
+sns.boxplot(x='V2', y='V6_4_Interview', data=group_3,
+            ax=axs[3])
+axs[3].set_title('Forth Interview')
+fig.subplots_adjust(hspace=0.8)
+plt.show()
+
+# V6 differences in # functions between utilitarian and hedonic V2
+# GROUP 4
+fig, axs = plt.subplots(nrows=1, ncols=4, sharex=True,
+                        sharey=True, figsize=(15, 10))
+fig.suptitle('GROUP 3: V2 (Utilitarian vs. Hedonic) & \
+V6 (# Functions [1--, 10++])',
+             fontsize=15, fontweight='bold')
+sns.boxplot(x='V2', y='V6_1_Interview', data=Apps_clean,
+            ax=axs[0])
+axs[0].set_title('First Interview')
+sns.boxplot(x='V2', y='V6_2_Interview', data=Apps_clean,
+            ax=axs[1])
+axs[1].set_title('Second Interview')
+sns.boxplot(x='V2', y='V6_3_Interview', data=Apps_clean,
+            ax=axs[2])
+axs[2].set_title('Third Interview')
+sns.boxplot(x='V2', y='V6_4_Interview', data=Apps_clean,
+            ax=axs[3])
+axs[3].set_title('Forth Interview')
+fig.subplots_adjust(hspace=0.8)
+plt.show()               
