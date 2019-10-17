@@ -1032,22 +1032,15 @@ plt.show()
 # No difference between the two datasets.
 
 
-# MAJOR VARIBLES CLEANING Interactive python !!
+# MAJOR VARIBLES CLEANING Interactive python
 # %reset_selective -f outbound
 # %reset_selective -f descriptive
-
-# del ax, axs, cbar_ax, col, cols, col_del, col_name, corr, dataframe_list
-# descriptive_2_1, descritpive_3_2, descriptive_4_3, fig, hexplot, i,
-# miss_cols_pct, model, num,
-# row, typo_date, typo_row_index, V10_outbound_idx, V11_outbound_idx,
-# V12_clean_1, V12_miss_1,
-# V12_outbound_idx, V13_outbound_idx, V14_outbound_idx, V1_merge,
-# V1_V01_miss_idx, V2_enc,
-# V2_outbound_idx, V3_enc, V3_outbound_idx, V4_1_outbound_idx,
-# V4_2_outbound_idx,
-# V4_3_outbound_idx, V4_4_outbound_idx, V6_clean_1, V6_miss_1,
-# V6_outbound_idx,
-# values_over_rows, X
+# %reset_selective -f col
+# %reset_selective -f typo
+# %reset_selective -f enc
+# %reset_selective -f ax
+# %reset_selective -f row
+# %reset_selective -f V
 
 # NUMBER OF COMPLETE ANSWERS FOR V12 AND V6 ACROSS INTERVIEWS
 Apps_clean.shape[0]  # 2977
@@ -1117,23 +1110,33 @@ Apps_missing[Apps_missing['V4_Not_Miss'] == 1].loc[:,  # all consecutive
 # they are all consecutive
 
 # for 2 > 2 missing = 88 count number on the first 2 rows should be 88
-Apps_missing[Apps_missing['V4_Not_Miss'] == 2].loc[:, ['V4_1_Interview',
-                                                       'V4_2_Interview']
-                                                   ].apply(lambda x:
-                                                           x.count(),
-                                                           axis=0)
-# delete the non consecutive ones (5 rows)
-# for 3 > 1 missing = 273 count number on the first 3 rows should be 273
-Apps_missing[Apps_missing['V4_Not_Miss'] == 3
-             ].loc[:, ['V4_1_Interview',
-                       'V4_2_Interview',
-                       'V4_3_Interview']
-                   ].apply(lambda x:
-                           x.count(),
-                           axis=1).value_counts()
+# add a new columns which count the number of values on the first two
+# interviews
+# axis: 0 or ‘index’: apply function to each column.
+# axis: 1 or ‘columns’: apply function to each row.
 
-# 0 or ‘index’: apply function to each column.
-# 1 or ‘columns’: apply function to each row.
+Apps_missing['V4_1_2_count'
+             ] = Apps_missing[Apps_missing['V4_Not_Miss'] == 2
+                              ].loc[:, ['V4_1_Interview',
+                                        'V4_2_Interview']
+                                    ].apply(lambda x:
+                                            x.count(),
+                                            axis=1)
+# delete the non consecutive ones (5 rows)
+pd.value_counts(Apps_missing['V4_1_2_count'])
+
+# for 3 > 1 missing = 273 count number on the first 3 rows should be 273
+# 167 contiguos
+Apps_missing['V4_1_2_3_count'
+             ] = Apps_missing[Apps_missing['V4_Not_Miss'] == 3
+                              ].loc[:, ['V4_1_Interview',
+                                        'V4_2_Interview',
+                                        'V4_3_Interview']
+                                    ].apply(lambda x:
+                                            x.count(),
+                                            axis=1)
+pd.value_counts(Apps_missing['V4_1_2_3_count'])
+
 Apps_missing['V6_Not_Miss'] = Apps_missing.loc[:, ['V6_1_Interview',
                                                    'V6_2_Interview',
                                                    'V6_3_Interview',
@@ -1147,6 +1150,26 @@ pd.value_counts(Apps_missing['V6_Not_Miss'])
 # all consecutive
 Apps_missing[Apps_missing['V6_Not_Miss'] == 1].loc[:, 'V6_1_Interview'].count()
 
+Apps_missing['V6_1_2_count'
+             ] = Apps_missing[Apps_missing['V6_Not_Miss'] == 2
+                              ].loc[:, ['V6_1_Interview',
+                                        'V6_2_Interview']
+                                    ].apply(lambda x:
+                                            x.count(),
+                                            axis=1)
+pd.value_counts(Apps_missing['V6_1_2_count'])
+
+Apps_missing['V6_1_2_3_count'
+             ] = Apps_missing[Apps_missing['V6_Not_Miss'] == 3
+                              ].loc[:, ['V6_1_Interview',
+                                        'V6_2_Interview',
+                                        'V6_3_Interview']
+                                    ].apply(lambda x:
+                                            x.count(),
+                                            axis=1)
+pd.value_counts(Apps_missing['V6_1_2_3_count'])
+
+# V12
 Apps_missing['V12_Not_Miss'] = Apps_missing.loc[:, ['V12_1_Interview',
                                                     'V12_2_Interview',
                                                     'V12_3_Interview',
@@ -1160,16 +1183,51 @@ pd.value_counts(Apps_missing['V12_Not_Miss'])
 Apps_missing[Apps_missing['V12_Not_Miss'] == 1].loc[:,
                                                     'V12_1_Interview'].count()
 
+Apps_missing['V12_1_2_count'
+             ] = Apps_missing[Apps_missing['V12_Not_Miss'] == 2
+                              ].loc[:, ['V12_1_Interview',
+                                        'V12_2_Interview']
+                                    ].apply(lambda x:
+                                            x.count(),
+                                            axis=1)
+pd.value_counts(Apps_missing['V12_1_2_count'])
+
+Apps_missing['V12_1_2_3_count'
+             ] = Apps_missing[Apps_missing['V12_Not_Miss'] == 3
+                              ].loc[:, ['V12_1_Interview',
+                                        'V12_2_Interview',
+                                        'V12_3_Interview']
+                                    ].apply(lambda x:
+                                            x.count(),
+                                            axis=1)
+pd.value_counts(Apps_missing['V12_1_2_3_count'])
+
 # Group 1:
-group_1 = Apps_missing[(Apps_missing['V2'] != 'missing') &
-                       (Apps_missing['V3'] != 'missing') &
-                       (Apps_missing['V4_Not_Miss'] == 1) &
+group_1 = Apps_missing[(Apps_missing['V2'] != 'missing') &  # V2 not missing
+                       (Apps_missing['V3'] != 'missing') &  # V3 not missing
+                       (Apps_missing['V4_Not_Miss'] == 1) &  # V4 not missing=1
                        (Apps_missing['V6_Not_Miss'] == 1) &
+                       # 1st interview not missing
                        (pd.notna(Apps_missing['V6_1_Interview'])) &
                        (Apps_missing['V12_Not_Miss'] == 1) &
                        (pd.notna(Apps_missing['V12_1_Interview']))]
 # Group 2:
-# from Here
+group_2 = Apps_missing[(Apps_missing['V2'] != 'missing') &
+                       (Apps_missing['V3'] != 'missing') &
+                       # V4 has 2 consecutive
+                       (Apps_missing['V4_1_2_count'] == 2) &
+                       # V6 has 2 consecutive
+                       (Apps_missing['V6_1_2_count'] == 2) &
+                       # V12 has 2 consecutive
+                       (Apps_missing['V12_1_2_count'] == 2)]
+
+# Group 3:
+group_3 = Apps_missing[(Apps_missing['V2'] != 'missing') &
+                       (Apps_missing['V3'] != 'missing') &
+                       # V4 with 3 consecutive
+                       (Apps_missing['V4_1_2_3_count'] == 3) &
+                       (Apps_missing['V6_1_2_3_count'] == 3) &
+                       (Apps_missing['V12_1_2_3_count'] == 3)]
 
 # For all
 fig, ax = plt.subplots()
@@ -1184,57 +1242,84 @@ plt.show()
 
 # V12 Satisfaction distribution over groups and interviews
 fig, axs = plt.subplots(1, 4, sharex=True, sharey=True, figsize=(15, 10))
-fig.suptitle('V12 Satisfaction [1--, 10++] - \
-                Univariate Distribution across Groups',
+fig.suptitle('V12 Satisfaction [1--, 10++] -\
+ Univariate Distribution across Groups',
              fontsize=15, fontweight='bold')
 axs[0].set_title('First Interview')
 sns.kdeplot(Apps_clean['V12_1_Interview'], shade=True, ax=axs[0],
-            label='All Interviews')
+            label='Group 4')
+sns.kdeplot(group_3['V12_1_Interview'], shade=True, ax=axs[0],
+            label='Group 3')
+sns.kdeplot(group_2['V12_1_Interview'], shade=True, ax=axs[0],
+            label='Group 2')
 sns.kdeplot(group_1['V12_1_Interview'], shade=True, ax=axs[0],
-            label='1st Interview')
+            label='Group 1')
 axs[1].set_title('Second Interview')
 sns.kdeplot(Apps_clean['V12_2_Interview'], shade=True, ax=axs[1],
-            label='All Interviews')
-
+            label='Group 4')
+sns.kdeplot(group_3['V12_2_Interview'], shade=True, ax=axs[1],
+            label='Group 3')
+sns.kdeplot(group_2['V12_2_Interview'], shade=True, ax=axs[1],
+            label='Group 2')
 axs[2].set_title('Third Interview')
 sns.kdeplot(Apps_clean['V12_3_Interview'], shade=True, ax=axs[2],
-            label='All Interviews')
-
+            label='Group 4')
+sns.kdeplot(group_3['V12_3_Interview'], shade=True, ax=axs[2],
+            label='Group 3')
 axs[3].set_title('Third Interview')
 sns.kdeplot(Apps_clean['V12_4_Interview'], shade=True, ax=axs[3],
-            label='All Interviews')
-
+            label='Group 4')
 fig.subplots_adjust(hspace=0.8)
 plt.legend()
 plt.show()
+
+# COMMENT:
+# Group 1 has not difference
+# Group 2 has more values at the lower scale (< 5)
+# there is not coherence between the groups, it is really hard to make a
+# conclusions
 
 # V6 number of functions distribution over groups and interviews
 fig, axs = plt.subplots(1, 4, sharex=True, sharey=True, figsize=(15, 10))
-fig.suptitle('V6 # Functions [1--, 10++] - \
-                Univariate Distribution across Groups',
+fig.suptitle('V6 # Functions [1--, 10++] -\
+ Univariate Distribution across Groups',
              fontsize=15, fontweight='bold')
 axs[0].set_title('First Interview')
 sns.kdeplot(Apps_clean['V6_1_Interview'], shade=True, ax=axs[0],
-            label='All Interviews')
+            label='Group 4')
+sns.kdeplot(group_3['V6_1_Interview'], shade=True, ax=axs[0],
+            label='Group 3')
+sns.kdeplot(group_2['V6_1_Interview'], shade=True, ax=axs[0],
+            label='Group 2')
 sns.kdeplot(group_1['V6_1_Interview'], shade=True, ax=axs[0],
-            label='1st Interview')
+            label='Group 1')
 axs[1].set_title('Second Interview')
 sns.kdeplot(Apps_clean['V6_2_Interview'], shade=True, ax=axs[1],
-            label='All Interviews')
-
+            label='Group 4')
+sns.kdeplot(group_3['V6_2_Interview'], shade=True, ax=axs[1],
+            label='Group 3')
+sns.kdeplot(group_2['V6_2_Interview'], shade=True, ax=axs[1],
+            label='Group 2')
 axs[2].set_title('Third Interview')
 sns.kdeplot(Apps_clean['V6_3_Interview'], shade=True, ax=axs[2],
-            label='All Interviews')
-
+            label='Group 4')
+sns.kdeplot(group_3['V6_3_Interview'], shade=True, ax=axs[2],
+            label='Group 3')
 axs[3].set_title('Third Interview')
 sns.kdeplot(Apps_clean['V6_4_Interview'], shade=True, ax=axs[3],
-            label='All Interviews')
-
+            label='Group 4')
 fig.subplots_adjust(hspace=0.8)
 plt.legend()
 plt.show()
 
+# COMMENT
+# Number of functionalities group 2 higher picks on high values
+# group 1 picks around 7.5
+# there is not a real trend on the data...hight number of functions
+# brings at some drop out.
+
 # V2 differences in frequency between utilitarian and hedonic v4
+# GROUP 1
 fig, axs = plt.subplots(nrows=1, ncols=4, sharex=True,
                         sharey=True, figsize=(15, 10))
 fig.suptitle('GROUP 1: V2 (Utilitarian vs. Hedonic) & \
@@ -1254,3 +1339,53 @@ sns.boxplot(x='V2', y='V4_4_Interview', data=group_1,
 axs[3].set_title('Forth Interview')
 fig.subplots_adjust(hspace=0.8)
 plt.show()
+
+# V2 differences in frequency between utilitarian and hedonic v4
+# GROUP 2
+fig, axs = plt.subplots(nrows=1, ncols=4, sharex=True,
+                        sharey=True, figsize=(15, 10))
+fig.suptitle('GROUP 2: V2 (Utilitarian vs. Hedonic) & \
+                V4 (Frequncy [1++, 7--])',
+             fontsize=15, fontweight='bold')
+sns.boxplot(x='V2', y='V4_1_Interview', data=group_2,
+            ax=axs[0])
+axs[0].set_title('First Interview')
+sns.boxplot(x='V2', y='V4_2_Interview', data=group_2,
+            ax=axs[1])
+axs[1].set_title('Second Interview')
+sns.boxplot(x='V2', y='V4_3_Interview', data=group_2,
+            ax=axs[2])
+axs[2].set_title('Third Interview')
+sns.boxplot(x='V2', y='V4_4_Interview', data=group_2,
+            ax=axs[3])
+axs[3].set_title('Forth Interview')
+fig.subplots_adjust(hspace=0.8)
+plt.show()
+
+# COMMENT
+# Duringthe second interview decrese in used frequency
+
+# V2 differences in frequency between utilitarian and hedonic v4
+# GROUP 3
+fig, axs = plt.subplots(nrows=1, ncols=4, sharex=True,
+                        sharey=True, figsize=(15, 10))
+fig.suptitle('GROUP 3: V2 (Utilitarian vs. Hedonic) & \
+                V4 (Frequncy [1++, 7--])',
+             fontsize=15, fontweight='bold')
+sns.boxplot(x='V2', y='V4_1_Interview', data=group_3,
+            ax=axs[0])
+axs[0].set_title('First Interview')
+sns.boxplot(x='V2', y='V4_2_Interview', data=group_3,
+            ax=axs[1])
+axs[1].set_title('Second Interview')
+sns.boxplot(x='V2', y='V4_3_Interview', data=group_3,
+            ax=axs[2])
+axs[2].set_title('Third Interview')
+sns.boxplot(x='V2', y='V4_4_Interview', data=group_3,
+            ax=axs[3])
+axs[3].set_title('Forth Interview')
+fig.subplots_adjust(hspace=0.8)
+plt.show()
+
+# COMMENT
+# Duringthe second interview decrese in used frequency
