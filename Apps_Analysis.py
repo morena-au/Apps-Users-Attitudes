@@ -1036,6 +1036,7 @@ plt.show()
 
 
 # MAJOR VARIBLES CLEANING Interactive python
+<<<<<<< HEAD
 '''
 %reset_selective -f outbound
 %reset_selective -f descriptive
@@ -1046,6 +1047,16 @@ plt.show()
 %reset_selective -f row
 %reset_selective -f V
 '''
+=======
+# %reset_selective -f outbound
+# %reset_selective -f descriptive
+# %reset_selective -f col
+# %reset_selective -f typo
+# %reset_selective -f enc
+# %reset_selective -f ax
+# %reset_selective -f row
+# %reset_selective -f V
+>>>>>>> fb7667c6da1aacad87c9f57fcfca32dd235b784d
 
 # NUMBER OF COMPLETE ANSWERS FOR V12 AND V6 ACROSS INTERVIEWS
 Apps_clean.shape[0]  # 2977
@@ -1321,7 +1332,11 @@ plt.show()
 # Number of functionalities group 2 higher picks on high values
 # group 1 picks around 7.5
 # there is not a real trend on the data...hight number of functions
+<<<<<<< HEAD
 # brings at some drop out.
+=======
+# brings at some drop out. 
+>>>>>>> fb7667c6da1aacad87c9f57fcfca32dd235b784d
 
 # V2 differences in frequency between utilitarian and hedonic v4
 # GROUP 1
@@ -1394,6 +1409,7 @@ plt.show()
 
 # COMMENT
 # Duringthe second interview decrese in used frequency
+<<<<<<< HEAD
 
 
 # ANOVA CALCULATION
@@ -1545,3 +1561,5 @@ groups.to_csv('groups.csv', index = False)
 Apps.to_csv('Apps.csv', index = False)
 
 
+=======
+>>>>>>> fb7667c6da1aacad87c9f57fcfca32dd235b784d
