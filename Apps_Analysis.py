@@ -13,10 +13,13 @@ from functools import reduce
 from datetime import datetime
 import seaborn as sns
 from sklearn.linear_model import LinearRegression
-import statsmodels.api as stm
+import statsmodels.api as sm
 from scipy import stats
 from sklearn.preprocessing import OneHotEncoder
 from statsmodels.stats.mediation import Mediation
+import researchpy as rp
+from statsmodels.formula.api import ols
+
 
 # Manage warnings
 pd.set_option('mode.chained_assignment', None)
@@ -1033,14 +1036,16 @@ plt.show()
 
 
 # MAJOR VARIBLES CLEANING Interactive python
-# %reset_selective -f outbound
-# %reset_selective -f descriptive
-# %reset_selective -f col
-# %reset_selective -f typo
-# %reset_selective -f enc
-# %reset_selective -f ax
-# %reset_selective -f row
-# %reset_selective -f V
+'''
+%reset_selective -f outbound
+%reset_selective -f descriptive
+%reset_selective -f col
+%reset_selective -f typo
+%reset_selective -f enc
+%reset_selective -f ax
+%reset_selective -f row
+%reset_selective -f V
+'''
 
 # NUMBER OF COMPLETE ANSWERS FOR V12 AND V6 ACROSS INTERVIEWS
 Apps_clean.shape[0]  # 2977
@@ -1390,93 +1395,153 @@ plt.show()
 # COMMENT
 # Duringthe second interview decrese in used frequency
 
-# V6 differences in # functions between utilitarian and hedonic V2
-# GROUP 1
-fig, axs = plt.subplots(nrows=1, ncols=4, sharex=True,
-                        sharey=True, figsize=(15, 10))
-fig.suptitle('GROUP 1: V2 (Utilitarian vs. Hedonic) & \
-V6 (# Functions [1--, 10++])',
-             fontsize=15, fontweight='bold')
-sns.boxplot(x='V2', y='V6_1_Interview', data=group_1,
-            ax=axs[0])
-axs[0].set_title('First Interview')
-sns.boxplot(x='V2', y='V6_2_Interview', data=group_1,
-            ax=axs[1])
-axs[1].set_title('Second Interview')
-sns.boxplot(x='V2', y='V6_3_Interview', data=group_1,
-            ax=axs[2])
-axs[2].set_title('Third Interview')
-sns.boxplot(x='V2', y='V6_4_Interview', data=group_1,
-            ax=axs[3])
-axs[3].set_title('Forth Interview')
-fig.subplots_adjust(hspace=0.8)
-plt.show()
 
-# V6 differences in # functions between utilitarian and hedonic V2
-# GROUP 2
-fig, axs = plt.subplots(nrows=1, ncols=4, sharex=True,
-                        sharey=True, figsize=(15, 10))
-fig.suptitle('GROUP 2: V2 (Utilitarian vs. Hedonic) & \
-V6 (# Functions [1--, 10++])',
-             fontsize=15, fontweight='bold')
-sns.boxplot(x='V2', y='V6_1_Interview', data=group_2,
-            ax=axs[0])
-axs[0].set_title('First Interview')
-sns.boxplot(x='V2', y='V6_2_Interview', data=group_2,
-            ax=axs[1])
-axs[1].set_title('Second Interview')
-sns.boxplot(x='V2', y='V6_3_Interview', data=group_2,
-            ax=axs[2])
-axs[2].set_title('Third Interview')
-sns.boxplot(x='V2', y='V6_4_Interview', data=group_2,
-            ax=axs[3])
-axs[3].set_title('Forth Interview')
-fig.subplots_adjust(hspace=0.8)
-plt.show()
+# ANOVA CALCULATION
+# Create a dataset with GROUPS, V2, V4, V6, V12, V17, V18
+# 1. Check if V17 and V18 are relevant
+'''
+# for group 1 > V17 2, 3, 4 are all missing
+# for group 2 > V17 only 2 with 0 missing
+#             > V18 only 2 with 1 missing
+# for group 3 > V18 only 3 with 1 missing
+#              > 17 only 3 with 1 missing
+'''
+
+group_4 = Apps_clean.drop(['Probanden_ID__lfdn__AppNr', 'Probanden_ID__lfdn',
+                           'Datum_1_Interview', 'Datum_2_Interview',
+                           'Datum_3_Interview',
+                           'Datum_4_Interview', 'V1', 'V3', 'V10', 'V11',
+                           'V13', 'V14',
+                           'V19_2_Interview', 'V19_3_Interview',
+                           'V19_4_Interview',
+                           'V20_2_Interview', 'V20_3_Interview',
+                           'V20_4_Interview',
+                           'V21_2_Interview', 'V21_3_Interview',
+                           'V21_4_Interview',
+                           'Miss_row_%', 'Days_Between_2_and_1_Interview',
+                           'Days_Between_3_and_2_Interview',
+                           'Days_Between_4_and_3_Interview', 'D4_2_1',
+                           'D4_3_2', 'D4_4_3',
+                           'D4_4_1', 'D6_2_1', 'D6_3_2', 'D6_4_3', 'D6_4_1',
+                           'D12_2_1', 'D12_3_2', 'D12_4_3', 'D12_4_1', 'V01'],
+                          axis=1)
+
+group_4['Group'] = 4
+
+for num, i in enumerate([group_1, group_2, group_3]):
+    i.drop(['Probanden_ID__lfdn__AppNr', 'Probanden_ID__lfdn',
+            'Datum_1_Interview', 'Datum_2_Interview',
+            'Datum_3_Interview',
+            'Datum_4_Interview', 'V1', 'V3', 'V10', 'V11',
+            'V13', 'V14',
+            'V19_2_Interview', 'V19_3_Interview',
+            'V19_4_Interview',
+            'V20_2_Interview', 'V20_3_Interview',
+            'V20_4_Interview',
+            'V21_2_Interview', 'V21_3_Interview',
+            'V21_4_Interview',
+            'Miss_row_%', 'Days_Between_2_and_1_Interview',
+            'Days_Between_3_and_2_Interview',
+            'Days_Between_4_and_3_Interview', 'V4_Not_Miss',
+            'V4_1_2_count', 'V4_1_2_3_count', 'V6_Not_Miss',
+            'V6_1_2_count', 'V6_1_2_3_count',
+            'V12_Not_Miss', 'V12_1_2_count', 'V12_1_2_3_count',
+            'V01'],
+           axis=1, inplace=True)
+
+    i['Group'] = num + 1
+
+group_3.drop('V01', axis=1, inplace=True)
+
+# reduce cumulatively compute a function on a list and return the result
+dataframe_list = [group_1, group_2, group_3, group_4]
+groups = reduce(lambda left, right: pd.DataFrame.append(left, right),
+                dataframe_list)
+
+# Getting summary statistics
+
+# G4 vs G1 for V6_1_Interview
+G4_G1 = groups.loc[(groups['Group'] == 4) | (groups['Group'] == 1), :]
+rp.summary_cont(G4_G1['V6_1_Interview'].groupby(G4_G1['Group']))
+
+# ANOVA with scipy.stats
+stats.f_oneway(G4_G1['V6_1_Interview'][G4_G1['Group'] == 1],
+               G4_G1['V6_1_Interview'][G4_G1['Group'] == 4])
 
 # COMMENT
-# Duringthe second interview decrese in used frequency
+# F-statistic= 1.16239 and p-value=0,281. There is not significant
+# effect of group on V6.
 
-# V6 differences in # functions between utilitarian and hedonic V2
-# GROUP 3
-fig, axs = plt.subplots(nrows=1, ncols=4, sharex=True,
-                        sharey=True, figsize=(15, 10))
-fig.suptitle('GROUP 3: V2 (Utilitarian vs. Hedonic) & \
-V6 (# Functions [1--, 10++])',
-             fontsize=15, fontweight='bold')
-sns.boxplot(x='V2', y='V6_1_Interview', data=group_3,
-            ax=axs[0])
-axs[0].set_title('First Interview')
-sns.boxplot(x='V2', y='V6_2_Interview', data=group_3,
-            ax=axs[1])
-axs[1].set_title('Second Interview')
-sns.boxplot(x='V2', y='V6_3_Interview', data=group_3,
-            ax=axs[2])
-axs[2].set_title('Third Interview')
-sns.boxplot(x='V2', y='V6_4_Interview', data=group_3,
-            ax=axs[3])
-axs[3].set_title('Forth Interview')
-fig.subplots_adjust(hspace=0.8)
-plt.show()
+# Groups are not with the same size
+# More robust test is the non-parametric Kruskal-Wallis H-test (1952)
 
-# V6 differences in # functions between utilitarian and hedonic V2
-# GROUP 4
-fig, axs = plt.subplots(nrows=1, ncols=4, sharex=True,
-                        sharey=True, figsize=(15, 10))
-fig.suptitle('GROUP 3: V2 (Utilitarian vs. Hedonic) & \
-V6 (# Functions [1--, 10++])',
-             fontsize=15, fontweight='bold')
-sns.boxplot(x='V2', y='V6_1_Interview', data=Apps_clean,
-            ax=axs[0])
-axs[0].set_title('First Interview')
-sns.boxplot(x='V2', y='V6_2_Interview', data=Apps_clean,
-            ax=axs[1])
-axs[1].set_title('Second Interview')
-sns.boxplot(x='V2', y='V6_3_Interview', data=Apps_clean,
-            ax=axs[2])
-axs[2].set_title('Third Interview')
-sns.boxplot(x='V2', y='V6_4_Interview', data=Apps_clean,
-            ax=axs[3])
-axs[3].set_title('Forth Interview')
-fig.subplots_adjust(hspace=0.8)
-plt.show()               
+stats.kruskal(G4_G1['V6_1_Interview'][G4_G1['Group'] == 1],
+              G4_G1['V6_1_Interview'][G4_G1['Group'] == 4])
+
+
+# COMMENT
+# KruskalResult = 0.37171 and p-value = 0.5420 There is not significant
+# effect of groups 1 and 4 on V6.
+
+# ANOVA with statsmodels
+'''
+# Let's Dummy the groups
+group_enc = OneHotEncoder(categories='auto', drop='first')
+# not include 1 of the groups. The group 1 will get captured in the 
+# model's intercept and is the base (control) group.
+group_enc = group_enc.fit(G4_G1['Group'].values.reshape(-1, 1))
+group_enc.categories_
+# 0 if ith app is in Group 1 
+# 1 if ith app is in Group 4
+
+G4_G1['Group'] = group_enc.transform(G4_G1['Group'].values.reshape(-1, 1)).toarray()
+
+G4_G1['Group'] = group_enc.inverse_transform(G4_G1['Group'].values.reshape(-1, 1))
+'''
+
+# 'C' takes care of creating a dummy. The group 1 will get captured in the
+# model's intercept and is the base (control) group.
+results = ols('V6_1_Interview ~ C(Group)', data = G4_G1).fit()
+results.summary()
+
+# COMMENT:
+# The intercept group is group 1. At he bottom there are tests to check model assumptions. 
+# F-stats = 1.162 and p=0.281. This tells us that there is not a significant differences
+# in the group means. The coefs, are the difference in mean between the control group and
+# the respective group listed.
+# The intercept is the mean for the group 1 and 6.88-0.33 = 6.55 is the mean for group 2.
+# To test betwen groups, we need to do some post-hoc testing where we compare all groups
+# against each other. 
+
+# ANOVA TABLE
+aov_table = sm.stats.anova_lm(results, typ=2)
+aov_table
+
+# COOMENT
+# the C(Group) ro is the between groups effect which is the overall
+# experimental effect. The sum of squares = 8.40 is how much variance is explained by
+# our model. The current model does not exaplain a significant amount with p > 0.05.
+# The residual row is the unsystematic variation in the data = 22056 unexplained variance.
+
+# G4 vs G1 for V2
+# Two-Way tables or contingency tables
+group_V2 = pd.crosstab(index=G4_G1['Group'],
+                       columns=G4_G1['V2'])
+group_V2
+
+# Calculate the Chi2 for the contingency table
+obs = np.array([[1, 43, 33], [4, 1560, 1417]])
+chi2, p_value, dof, exp = stats.chi2_contingency(obs)
+p_value
+
+
+# Create the final csv file
+Apps_clean.to_csv('Apps_clean.csv', index = False)
+
+group_1.to_csv('group_1.csv', index = False)
+group_2.to_csv('group_2.csv', index = False)
+group_3.to_csv('group_3.csv', index = False)
+groups.to_csv('groups.csv', index = False)
+Apps.to_csv('Apps.csv', index = False)
+
+
