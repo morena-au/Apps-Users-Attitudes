@@ -1,10 +1,5 @@
-# %% [markdown]
-# # Apps Analysis
 
-# %% [markdown]
 # ## 0. Data preprocessing
-
-# %%
 # Load library
 import pandas as pd
 import numpy as np
@@ -18,22 +13,23 @@ from scipy import stats
 from sklearn.preprocessing import OneHotEncoder
 from statsmodels.stats.mediation import Mediation
 
+
 # Manage warnings
 pd.set_option('mode.chained_assignment', None)
 
 # Import excel files
-Data_1 = pd.read_excel(r'./Data_1.xlsx')
-Data_2 = pd.read_excel(r'./Data_2.xlsx')
-Data_3 = pd.read_excel(r'./Data_3.xlsx')
-Data_4 = pd.read_excel(r'./Data_4.xlsx')
-Personality = pd.read_excel(r'./Part_Personality.xlsx')
+Data_1 = pd.read_excel(r'./Datasets/Data_1.xlsx')
+Data_2 = pd.read_excel(r'./Datasets/Data_2.xlsx')
+Data_3 = pd.read_excel(r'./Datasets/Data_3.xlsx')
+Data_4 = pd.read_excel(r'./Datasets/Data_4.xlsx')
+Personality = pd.read_excel(r'./Datasets/Part_Personality.xlsx')
 
 # Create a new ID column common to all datasets
 for i in [Data_1, Data_2, Data_3, Data_4, Personality]:
     # concatenate 'Probanden_ID' and 'lfdn' to create a new unique variable
     # which identify the combination participant-app
-    i['Probanden_ID__lfdn'] = i.Probanden_ID.astype(str) + '__' + \
-                                  i.lfdn.astype(str)
+    i['Probanden_ID__lfdn'] = i.Probanden_ID.astype(str) + \
+                                '__' + i.lfdn.astype(str)
 
 # Create a new ID column which uniquely identify observations
 # on Data_1, Data_2, Data_3, Data_4
@@ -308,7 +304,6 @@ Apps['Days_Between_4_and_3_Interview'] = \
                                                      x.total_seconds() /
                                                      60/60/24)
 
-# %%
 # Plot the different frequency graphs
 descriptive_2_1 = pd.DataFrame.describe(Apps['Days_Between_2_and_1_Interview'])
 descriptive_3_2 = pd.DataFrame.describe(Apps['Days_Between_3_and_2_Interview'])
@@ -329,7 +324,6 @@ axs[2].set_title('{}'.format(descriptive_4_3), fontsize=9, fontweight='bold')
 fig.subplots_adjust(top=0.85, hspace=0.8)
 plt.show()
 
-# %%
 # KK_5__278 >> 2018 - 2017 - 2017 - 2018
 # chenge the middle two dates
 Apps.loc[Apps['Datum_2_Interview'] == datetime(2017, 5, 13),
@@ -501,10 +495,7 @@ Apps_clean = Apps.dropna()
 # Read the file into the workspace
 # Apps_clean = pd.read_csv(r'./Apps_clean.csv')
 
-# %% [markdown]
 # ## 1. Exploratory Data Analysis
-
-# %%
 # V2 differences in frequency between utilitarian and hedonic
 fig, axs = plt.subplots(nrows=1, ncols=4, sharex=True,
                         sharey=True, figsize=(15, 10))
