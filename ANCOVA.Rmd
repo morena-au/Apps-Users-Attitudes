@@ -1,0 +1,261 @@
+---
+title: "ANCOVA"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Rmcorr and ANCOVA
+
+```{r import, echo=FALSE, message=FALSE, warning=FALSE}
+# Rmcorr and ANCOVA
+library(rmcorr)
+library(dplyr)
+
+
+# Import datasets
+setwd("~/Desktop/PythonWorkspace/AppInvestigation/Datasets")
+group_4_raw <- read.csv('group_4.csv')
+group_3_raw <- read.csv('group_3.csv')
+group_2_raw <- read.csv('group_2.csv')
+
+# Data format for the analysis
+# Drop unused columns
+group_4_raw <- select(group_4_raw, -c("Probanden_ID__lfdn", "V2", "V17_2_Interview", "V17_3_Interview",
+                                      "V17_4_Interview", "V18_2_Interview", "V18_3_Interview", "V18_4_Interview"))
+group_3_raw <- select(group_3_raw, -c("Probanden_ID__lfdn", "V2", "V17_2_Interview", "V17_3_Interview",
+                                      "V17_4_Interview", "V18_2_Interview", "V18_3_Interview", "V18_4_Interview"))
+group_2_raw <- select(group_2_raw, -c("Probanden_ID__lfdn", "V2", "V17_2_Interview", "V17_3_Interview",
+                                      "V17_4_Interview", "V18_2_Interview", "V18_3_Interview", "V18_4_Interview"))
+
+# replicate all participants 4 times
+Participant <- group_4_raw["Probanden_ID__lfdn__AppNr"]
+Participant <- Participant[rep(seq_len(nrow(Participant)), 4), ]
+
+# Insert Interview's number
+Trial <- c(rep(1, nrow(group_4_raw)), rep(2, nrow(group_4_raw)), 
+           rep(3, nrow(group_4_raw)), rep(4, nrow(group_4_raw)))
+
+# Append variable from each interview one after another
+V4 <- c(group_4_raw["V4_1_Interview"][,], group_4_raw["V4_2_Interview"][,],
+        group_4_raw["V4_3_Interview"][,], group_4_raw["V4_4_Interview"][,])
+
+V6 <- c(group_4_raw["V6_1_Interview"][,], group_4_raw["V6_2_Interview"][,],
+        group_4_raw["V6_3_Interview"][,], group_4_raw["V6_4_Interview"][,])
+
+V12 <- c(group_4_raw["V12_1_Interview"][,], group_4_raw["V12_2_Interview"][,],
+         group_4_raw["V12_3_Interview"][,], group_4_raw["V12_4_Interview"][,])
+
+# group 4 final dataset
+group_4 <- data.frame(Participant, Trial, V4, V6, V12)
+
+
+# replicate all participants 3 times
+Participant <- group_3_raw["Probanden_ID__lfdn__AppNr"]
+Participant <- Participant[rep(seq_len(nrow(Participant)), 3), ]
+
+# Insert Interview's number
+Trial <- c(rep(1, nrow(group_3_raw)), rep(2, nrow(group_3_raw)), 
+           rep(3, nrow(group_3_raw)))
+
+# Append variable from each interview one after another
+V4 <- c(group_3_raw["V4_1_Interview"][,], group_3_raw["V4_2_Interview"][,],
+        group_3_raw["V4_3_Interview"][,])
+
+V6 <- c(group_3_raw["V6_1_Interview"][,], group_3_raw["V6_2_Interview"][,],
+        group_3_raw["V6_3_Interview"][,])
+
+V12 <- c(group_3_raw["V12_1_Interview"][,], group_3_raw["V12_2_Interview"][,],
+         group_3_raw["V12_3_Interview"][,])
+
+# group 3 final dataset
+group_3 <- data.frame(Participant, Trial, V4, V6, V12)
+
+
+# replicate all participants 2 times
+Participant <- group_2_raw["Probanden_ID__lfdn__AppNr"]
+Participant <- Participant[rep(seq_len(nrow(Participant)), 2), ]
+
+# Insert Interview's number
+Trial <- c(rep(1, nrow(group_2_raw)), rep(2, nrow(group_2_raw)))
+
+# Append variable from each interview one after another
+V4 <- c(group_2_raw["V4_1_Interview"][,], group_2_raw["V4_2_Interview"][,])
+
+V6 <- c(group_2_raw["V6_1_Interview"][,], group_2_raw["V6_2_Interview"][,])
+
+V12 <- c(group_2_raw["V12_1_Interview"][,], group_2_raw["V12_2_Interview"][,])
+
+# group 2 final dataset
+group_2 <- data.frame(Participant, Trial, V4, V6, V12)
+```
+
+
+## V4 vs V6 group 4
+
+### Sample observations for plotting
+RMCORR: assesses the intra-individual or longitudinal change.
+To be able to plot, we sample randomly roughly 10 people from the dataset.
+
+```{r group_4_sample_V6_v4}
+# set seed to make the sampling reproducible
+set.seed(123)
+group_4_ind <- sample(seq_len(nrow(group_4)), size = 10)
+group_4_sample <- group_4[group_4$Participant %in% group_4[group_4_ind,1],]
+
+V6_V4_sample.rmc <- rmcorr(Participant, V6, V4, group_4_sample)
+print(V6_V4_sample.rmc)
+```
+
+```{r group_4_sample_plot_V6_V4}
+plot(V6_V4_sample.rmc, overall = T, lty=2, xlab = 'V6', ylab = 'V4')
+```
+
+
+**COMMENT:**
+r = -0.3968902 and p-value = 0.02705829, there is a negative significant relationship between V6 and V4 intra-individuals, which is weaker than the relationship calculated with the regression line (gray line).  
+
+### All group 4 observations output
+```{r group_4_V6_V4}
+# Overall rmcorr output
+rmc.out <- rmcorr(Participant, V4, V6, group_4)
+print(rmc.out)
+```
+
+**COMMENT**:
+Small effect sizes for rmcorr (r = -0.15) may be caused by heterogenous slopes
+(poor model fit), or by consistently near-zero slopes across subjects, or by
+restriction in the range of one or both measures.
+
+## V4 vs V12 group 4
+### Sample observations for plotting
+```{r group_4_sample_V12_V4}
+V12_V4_sample.rmc <- rmcorr(Participant, V12, V4, group_4_sample)
+print(V12_V4_sample.rmc)
+```
+```{r group_4_sample_plot_V12_V4}
+plot(V12_V4_sample.rmc, overall = T, lty=2, xlab = 'V12', ylab = 'V4')
+```
+
+
+**COMMENT:**
+r = -0.37 and p-value = 0.03, there is a negative significant relationship between V6 and V4 intra-individuals, which is weaker than the relationship calculated with the regression line (gray line).  
+
+### All group 4 observations output
+```{r group_4_V12_V4}
+# Overall rmcorr output
+rmc.out <- rmcorr(Participant, V4, V12, group_4)
+print(rmc.out)
+```
+
+**COMMENT**:
+Small effect sizes for rmcorr (r = -0.20).
+Observations do not change much across interviews. 
+
+## V4 vs V6 group 3
+### Sample observations for plotting
+```{r group_3_sample_V6_v4}
+# set seed to make the sampling reproducible
+set.seed(123)
+group_3_ind <- sample(seq_len(nrow(group_3)), size = 10)
+group_3_sample <- group_3[group_3$Participant %in% group_3[group_3_ind,1],]
+
+V6_V4_sample.rmc <- rmcorr(Participant, V6, V4, group_3_sample)
+print(V6_V4_sample.rmc)
+```
+
+```{r group_3_sample_plot_V6_V4}
+plot(V6_V4_sample.rmc, overall = T, lty=2, xlab = 'V6', ylab = 'V4')
+```
+
+
+**COMMENT**:
+Small effect sizes for rmcorr (r = -0.25) and p=0.27 not statistically significant.
+
+### All group 3 observations output
+```{r group_3_V6_V4}
+# Overall rmcorr output
+rmc.out <- rmcorr(Participant, V4, V6, group_3)
+print(rmc.out)
+```
+
+## V4 vs V12 group 3
+### Sample observations for plotting
+
+```{r group_3_sample_V12_v4}
+# set seed to make the sampling reproducible
+V12_V4_sample.rmc <- rmcorr(Participant, V12, V4, group_3_sample)
+print(V12_V4_sample.rmc)
+```
+```{r group_3_sample_plot_V12_V4}
+plot(V12_V4_sample.rmc, overall = T, lty=2, xlab = 'V6', ylab = 'V4')
+```
+
+### All group 3 observations output
+```{r group_3_V12_V4}
+# Overall rmcorr output
+rmc.out <- rmcorr(Participant, V4, V12, group_3)
+print(rmc.out)
+```
+
+## V4 vs V6 group 2
+### Sample observations for plotting
+```{r group_2_sample_V6_v4}
+# set seed to make the sampling reproducible
+set.seed(123)
+group_2_ind <- sample(seq_len(nrow(group_2)), size = 10)
+group_2_sample <- group_2[group_2$Participant %in% group_2[group_2_ind,1],]
+
+V6_V4_sample.rmc <- rmcorr(Participant, V6, V4, group_2_sample)
+print(V6_V4_sample.rmc)
+```
+
+```{r group_2_sample_plot_V6_V4}
+plot(V6_V4_sample.rmc, overall = T, lty=2, xlab = 'V6', ylab = 'V4')
+```
+
+**COMMENT**:
+Not statistically significant.
+
+### All group 2 observations output
+```{r group_2_V6_V4}
+# Overall rmcorr output
+rmc.out <- rmcorr(Participant, V4, V6, group_2)
+print(rmc.out)
+```
+
+## V4 vs V12 group 2
+### Sample observations for plotting
+
+```{r group_2_sample_V12_V4}
+V12_V4_sample.rmc <- rmcorr(Participant, V12, V4, group_2_sample)
+print(V12_V4_sample.rmc)
+```
+```{r group_2_sample_plot_V12_V4}
+plot(V12_V4_sample.rmc, overall = T, lty=2, xlab = 'V6', ylab = 'V4')
+```
+
+### All group 3 observations output
+```{r group_2_V12_V4}
+# Overall rmcorr output
+rmc.out <- rmcorr(Participant, V4, V12, group_2)
+print(rmc.out)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
