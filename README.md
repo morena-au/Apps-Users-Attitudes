@@ -13,3 +13,6 @@ https://nbviewer.jupyter.org/github/morena-au/Apps-Users-Attitudes/blob/master/2
 
 **3. ANOVA**: <br />
 https://nbviewer.jupyter.org/github/morena-au/Apps-Users-Attitudes/blob/master/3_ANOVA.ipynb
+
+**4. ANCOVA**: <br />
+Available for download in the html_files folder
