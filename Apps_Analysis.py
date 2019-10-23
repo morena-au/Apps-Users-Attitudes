@@ -1805,8 +1805,8 @@ plt.show()
 #              > 17 only 3 with 1 missing
 '''
 
-group_4 = Apps_clean.drop(['Probanden_ID__lfdn__AppNr', 'Probanden_ID__lfdn',
-                           'Datum_1_Interview', 'Datum_2_Interview',
+# keep keys
+group_4 = Apps_clean.drop(['Datum_1_Interview', 'Datum_2_Interview',
                            'Datum_3_Interview',
                            'Datum_4_Interview', 'V1', 'V3', 'V10', 'V11',
                            'V13', 'V14',
@@ -1827,8 +1827,7 @@ group_4 = Apps_clean.drop(['Probanden_ID__lfdn__AppNr', 'Probanden_ID__lfdn',
 group_4['Group'] = 4
 
 for num, i in enumerate([group_1, group_2, group_3]):
-    i.drop(['Probanden_ID__lfdn__AppNr', 'Probanden_ID__lfdn',
-            'Datum_1_Interview', 'Datum_2_Interview',
+    i.drop(['Datum_1_Interview', 'Datum_2_Interview',
             'Datum_3_Interview',
             'Datum_4_Interview', 'V1', 'V3', 'V10', 'V11',
             'V13', 'V14',
@@ -1848,8 +1847,6 @@ for num, i in enumerate([group_1, group_2, group_3]):
            axis=1, inplace=True)
 
     i['Group'] = num + 1
-
-group_3.drop('V01', axis=1, inplace=True)
 
 # reduce cumulatively compute a function on a list and return the result
 dataframe_list = [group_1, group_2, group_3, group_4]
@@ -1941,8 +1938,9 @@ p_value
 # Create the final csv file
 # Apps_clean.to_csv('Apps_clean.csv', index = False)
 
-# group_1.to_csv('group_1.csv', index = False)
-# group_2.to_csv('group_2.csv', index = False)
-# group_3.to_csv('group_3.csv', index = False)
-# groups.to_csv('groups.csv', index = False)
+group_1.to_csv('group_1.csv', index = False)
+group_2.to_csv('group_2.csv', index = False)
+group_3.to_csv('group_3.csv', index = False)
+group_4.to_csv('group_4.csv', index = False)
+groups.to_csv('groups.csv', index = False)
 # Apps.to_csv('Apps.csv', index = False)
