@@ -1,7 +1,7 @@
 # Rmcorr and ANCOVA
 library(rmcorr)
 library(dplyr)
-
+library(readxl)
 
 # Import datasets
 setwd("~/Projects/AppInvestigation/Datasets")
@@ -9,7 +9,8 @@ group_4_raw <- read.csv('group_4.csv')
 group_3_raw <- read.csv('group_3.csv')
 group_2_raw <- read.csv('group_2.csv')
 group_1_raw <- read.csv('group_1.csv')
-
+Apps <- read.csv("Apps.csv")
+personality <- read_excel("Part_Personality.xlsx")
 
 # Data format for the analysis
 # Drop unused columns
@@ -103,9 +104,157 @@ V12 <- c(group_1_raw["V12_1_Interview"][,])
 group_1 <- data.frame(Participant, Trial, V4, V6, V12)
 group_1['Group'] = 1
 
+rm(group_1_raw, group_2_raw, group_3_raw, group_4_raw)
+
+# Add all the other columns
+
+colnames(Apps)[1] = 'Participant'
+
+#Datum[1,2,3,4]
+group_1 = merge(group_1, Apps[, c('Participant', 'Datum_1_Interview')], by ='Participant')
+colnames(group_1)[7] = 'Datum'
+group_1[, 'V17'] <- NA
+group_1[, 'V18'] <- NA
+group_1[, 'V19'] <- NA
+group_1[, 'V20'] <- NA
+group_1[, 'V21'] <- NA
+
+# GROUP 1
+# subset by number of interview
+group_2_1 = subset(group_2, Trial==1)
+group_2_1 = merge(group_2_1, Apps[, c('Participant', 'Datum_1_Interview')], by ='Participant')
+colnames(group_2_1)[7] = 'Datum'
+group_2_1[, 'V17'] <- NA
+group_2_1[, 'V18'] <- NA
+group_2_1[, 'V19'] <- NA
+group_2_1[, 'V20'] <- NA
+group_2_1[, 'V21'] <- NA
+
+
+# V17[2,3,4]
+# #V18[2,3,4], V19[2,3,4], V20[2,3,4], V21[2,3,4]
+group_2_2 = subset(group_2, Trial == 2)
+group_2_2 = merge(group_2_2, Apps[, c('Participant', 'Datum_2_Interview', 
+                                      'V17_2_Interview', 'V18_2_Interview',
+                                      'V19_2_Interview', 'V20_2_Interview',
+                                      'V21_2_Interview')], by ='Participant')
+colnames(group_2_2)[7] = 'Datum'
+colnames(group_2_2)[8] = 'V17'
+colnames(group_2_2)[9] = 'V18'
+colnames(group_2_2)[10] = 'V19'
+colnames(group_2_2)[11] = 'V20'
+colnames(group_2_2)[12] = 'V21'
+
+
+group_2 <- rbind(group_2_1, group_2_2)
+rm(group_2_1, group_2_2)
+
+# GROUP 3
+# subset by number of interview
+group_3_1 = subset(group_3, Trial==1)
+group_3_1 = merge(group_3_1, Apps[, c('Participant', 'Datum_1_Interview')], by ='Participant')
+colnames(group_3_1)[7] = 'Datum'
+group_3_1[, 'V17'] <- NA
+group_3_1[, 'V18'] <- NA
+group_3_1[, 'V19'] <- NA
+group_3_1[, 'V20'] <- NA
+group_3_1[, 'V21'] <- NA
+
+group_3_2 = subset(group_3, Trial == 2)
+group_3_2 = merge(group_3_2, Apps[, c('Participant', 'Datum_2_Interview', 
+                                      'V17_2_Interview', 'V18_2_Interview',
+                                      'V19_2_Interview', 'V20_2_Interview',
+                                      'V21_2_Interview')], by ='Participant')
+colnames(group_3_2)[7] = 'Datum'
+colnames(group_3_2)[8] = 'V17'
+colnames(group_3_2)[9] = 'V18'
+colnames(group_3_2)[10] = 'V19'
+colnames(group_3_2)[11] = 'V20'
+colnames(group_3_2)[12] = 'V21'
+
+group_3_3 = subset(group_3, Trial == 3)
+group_3_3 = merge(group_3_3, Apps[, c('Participant', 'Datum_3_Interview', 
+                                      'V17_3_Interview', 'V18_3_Interview',
+                                      'V19_3_Interview', 'V20_3_Interview',
+                                      'V21_3_Interview')], by ='Participant')
+colnames(group_3_3)[7] = 'Datum'
+colnames(group_3_3)[8] = 'V17'
+colnames(group_3_3)[9] = 'V18'
+colnames(group_3_3)[10] = 'V19'
+colnames(group_3_3)[11] = 'V20'
+colnames(group_3_3)[12] = 'V21'
+
+group_3 <- rbind(group_3_1, group_3_2, group_3_3)
+rm(group_3_1, group_3_2, group_3_3)
+
+# GROUP 4
+# subset by number of interview
+group_4_1 = subset(group_4, Trial==1)
+group_4_1 = merge(group_4_1, Apps[, c('Participant', 'Datum_1_Interview')], by ='Participant')
+colnames(group_4_1)[7] = 'Datum'
+group_4_1[, 'V17'] <- NA
+group_4_1[, 'V18'] <- NA
+group_4_1[, 'V19'] <- NA
+group_4_1[, 'V20'] <- NA
+group_4_1[, 'V21'] <- NA
+
+group_4_2 = subset(group_4, Trial == 2)
+group_4_2 = merge(group_4_2, Apps[, c('Participant', 'Datum_2_Interview', 
+                                      'V17_2_Interview', 'V18_2_Interview',
+                                      'V19_2_Interview', 'V20_2_Interview',
+                                      'V21_2_Interview')], by ='Participant')
+colnames(group_4_2)[7] = 'Datum'
+colnames(group_4_2)[8] = 'V17'
+colnames(group_4_2)[9] = 'V18'
+colnames(group_4_2)[10] = 'V19'
+colnames(group_4_2)[11] = 'V20'
+colnames(group_4_2)[12] = 'V21'
+
+group_4_3 = subset(group_4, Trial == 3)
+group_4_3 = merge(group_4_3, Apps[, c('Participant', 'Datum_3_Interview', 
+                                      'V17_3_Interview', 'V18_3_Interview',
+                                      'V19_3_Interview', 'V20_3_Interview',
+                                      'V21_3_Interview')], by ='Participant')
+colnames(group_4_3)[7] = 'Datum'
+colnames(group_4_3)[8] = 'V17'
+colnames(group_4_3)[9] = 'V18'
+colnames(group_4_3)[10] = 'V19'
+colnames(group_4_3)[11] = 'V20'
+colnames(group_4_3)[12] = 'V21'
+
+group_4_4 = subset(group_4, Trial == 4)
+group_4_4 = merge(group_4_4, Apps[, c('Participant', 'Datum_4_Interview', 
+                                      'V17_4_Interview', 'V18_4_Interview',
+                                      'V19_4_Interview', 'V20_4_Interview',
+                                      'V21_4_Interview')], by ='Participant')
+colnames(group_4_4)[7] = 'Datum'
+colnames(group_4_4)[8] = 'V17'
+colnames(group_4_4)[9] = 'V18'
+colnames(group_4_4)[10] = 'V19'
+colnames(group_4_4)[11] = 'V20'
+colnames(group_4_4)[12] = 'V21'
+
+group_4 <- rbind(group_4_1, group_4_2, group_4_3, group_4_4)
+rm(group_4_1, group_4_2, group_4_3, group_4_4)
+
+# V1, V01, V2, V3, V10, V11, V13, V14
 time_row <- rbind(group_1, group_2, group_3, group_4)
 
-write.csv(time_row, file ='~/Projects/AppInvestigation/Datasets/time_row.csv')
+time_row = merge(time_row, Apps[, c("Participant", "V1", "V01", "V2", "V3",
+                         "V10", "V11", "V13", "V14")], by = 'Participant')
+
+# Merge with personality
+# create identifier
+
+
+time_row[,'Probanden_ID__lfdn'] <- gsub('__[^__]+$', '', time_row$Participant)
+
+personality['Probanden_ID__lfdn'] <- paste0(personality$Probanden_ID, '__', personality$lfdn)
+
+time_row = merge(time_row, personality[, c("Probanden_ID__lfdn", "Gender", "Age", "HABIT", "NovSeek",
+                                        "PrivConc")], by = 'Probanden_ID__lfdn')
+
+write.csv(time_row, file ='~/Projects/AppInvestigation/Datasets/time_row.csv', row.names=FALSE)
 
 
 # RMCORR: assesses the intra-individual or longitudinal change
